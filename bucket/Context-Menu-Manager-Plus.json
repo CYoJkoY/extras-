@@ -1,0 +1,55 @@
+{
+    "version": "1.7.2",
+    "description": "Context Menu Manager Plus is a powerful utility that helps you manage your right-click menu on Windows and keeps third-party apps from cluttering it up with junk.",
+    "homepage": "https://github.com/PLFJY/ContextMenuMgr",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2/ContextMenuMgrPlus-1.7.2-x64-framework-dependent-Setup.exe",
+            "hash": "148a0db3f235145283fb9a188881e0556385b3f20df71a6f157c5b2134149221"
+        },
+        "32bit": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2/ContextMenuMgrPlus-1.7.2-x86-framework-dependent-Setup.exe",
+            "hash": "d921c40d3a40d306b59ebd9f2106e1dd5d58198614e50fba8bca777bd749307b"
+        },
+        "arm64": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2/ContextMenuMgrPlus-1.7.2-arm64-framework-dependent-Setup.exe",
+            "hash": "b880c2f11cbf89d4fb46850d0e5686b1aed0b623e3f6fce6b3399e24491f3985"
+        }
+    },
+    "installer": {
+        "script": [
+            "Start-Process \"$dir\\$fname\" -ArgumentList '/SILENT /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=\"$dir\"' -Wait"
+        ]
+    },
+    "uninstaller": {
+        "script": "Start-Process \"$dir\\Uninstall.exe\" -ArgumentList '/SILENT /VERYSILENT /SUPPRESSMSGBOXES' -Wait"
+    },
+    "shortcuts": [
+        [
+            "ContextMenuMgrPlus.exe",
+            "Context Menu Manager Plus"
+        ]
+    ],
+    "bin": "ContextMenuMgrPlus.exe",
+    "checkver": {
+        "github": "https://github.com/PLFJY/ContextMenuMgr"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-x64-framework-dependent-Setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-x86-framework-dependent-Setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-arm64-framework-dependent-Setup.exe"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/tag/v$version",
+            "regex": "(?s)$sha256.*?$basename"
+        }
+    }
+}
