@@ -25,7 +25,7 @@
     ],
     "checkver": {
         "url": "https://www.rw-designer.com/cursor-maker",
-        "regex": "RealWorld Cursor Editor ([\\d.]+)"
+        "regex": "RealWorld Cursor Editor[^>]*?>[^<]*?([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
