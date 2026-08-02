@@ -6,7 +6,7 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/pgkt04/defender-control/releases/download/v2.0/enable-defender.exe",
-            "hash": "897307c0487c3f7376eedf6b3f999559e0aa16855571f30aef4621583f7ff46e"
+            "hash": "123866f5752a876a562fe8fca3b61846aecf3881477d31aedf735e3357184224"
         }
     },
     "bin": [
