@@ -19,5 +19,12 @@
     "checkver": {
         "url": "https://www.jianguoyun.com/s/downloads",
         "regex": "最新版本：([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://pkg-cdn.jianguoyun.com/static/exe/installer/NutstoreWindowsWPFInstaller.exe#/dl.7z"
+            }
+        }
     }
 }
