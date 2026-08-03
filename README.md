@@ -1,37 +1,39 @@
-<div align="center">
-  <img src="./assets/logo-placeholder.svg" width="80" height="80" alt="extra- bucket logo">
-  <h1 style="font-weight: 350; color: #E6DED6;">extra- — Scoop Bucket</h1>
-  <p style="font-size: 1.2em; color: #BEB8AE;">The Tool Supply Station Outside Scoop's Official Repositories</p>
-  <p style="color: #8A9E8B;">A supplementary software package repository for the Windows package manager Scoop, covering useful tools not included in official buckets</p>
+<div align="center" style="background-color: #1E1E1E; padding: 40px 20px; border-radius: 28px;">
+
+  <div style="background: #2A2A2A; border-radius: 36px; padding: 42px 18px; margin-bottom: 28px;">
+    <img src="./assets/logo-placeholder.svg" width="80" height="80" alt="extra- bucket logo" style="border-radius: 16px;">
+    <h1 style="color: #E6DED6; font-weight: 350; letter-spacing: 2px; margin: 18px 0 8px;">extra- — Scoop Bucket</h1>
+    <p style="color: #BEB8AE; font-size: 1.2em; max-width: 600px; margin: 0 auto;">The Tool Supply Station Outside Scoop's Official Repositories</p>
+    <p style="color: #8A9E8B; font-size: 0.95em; margin-top: 12px;">A supplementary software package repository for the Windows package manager Scoop</p>
+  </div>
+
+  <p>
+    <a href="https://scoop.sh"><img src="https://img.shields.io/badge/Scoop-extra--blue?style=flat-square&logo=scoop" alt="Scoop"></a>
+    <a href="https://github.com/CYoJkoY/extras-"><img src="https://img.shields.io/github/repo-size/CYoJkoY/extras-?style=flat-square" alt="GitHub repo size"></a>
+    <a href="https://github.com/CYoJkoY/extras-/blob/master/LICENSE"><img src="https://img.shields.io/github/license/CYoJkoY/extras-?style=flat-square" alt="GitHub license"></a>
+    <a href="#"><img src="https://img.shields.io/badge/Platform-Windows-8A9E8B?style=flat-square" alt="Platform"></a>
+    <a href="https://cyojkoy.github.io/Payment/"><img src="https://img.shields.io/badge/💰-Support-9E8F7E?style=flat-square&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support"></a>
+  </p>
+
+  <p style="word-spacing: 6px; margin-top: 20px;">
+    <a href="#overview" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Overview</a> &nbsp;•&nbsp;
+    <a href="#core-features" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Core Features</a> &nbsp;•&nbsp;
+    <a href="#quick-reference" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Quick Reference</a> &nbsp;•&nbsp;
+    <a href="#installation-setup" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Installation & Setup</a> &nbsp;•&nbsp;
+    <a href="#bucket-management" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Bucket Management</a> &nbsp;•&nbsp;
+    <a href="#project-structure" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Project Structure</a> &nbsp;•&nbsp;
+    <a href="#implementation-highlights" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Implementation Highlights</a> &nbsp;•&nbsp;
+    <a href="#security-notes" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Security Notes</a> &nbsp;•&nbsp;
+    <a href="#contributing-feedback" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Contributing & Feedback</a>
+  </p>
 </div>
 
-<p align="center">
-  <a href="https://scoop.sh"><img src="https://img.shields.io/badge/Scoop-extra--blue?style=flat-square&logo=scoop" alt="Scoop"></a>
-  <a href="https://github.com/CYoJkoY/extras-"><img src="https://img.shields.io/github/repo-size/CYoJkoY/extras-?style=flat-square" alt="GitHub repo size"></a>
-  <a href="https://github.com/CYoJkoY/extras-/blob/master/LICENSE"><img src="https://img.shields.io/github/license/CYoJkoY/extras-?style=flat-square" alt="GitHub license"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Platform-Windows-8A9E8B?style=flat-square" alt="Platform"></a>
-  <a href="https://cyojkoy.github.io/Payment/"><img src="https://img.shields.io/badge/💰-Support-9E8F7E?style=flat-square&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support"></a>
-</p>
-
-<p align="center" style="margin-top: -10px;">
-  <a href="#overview">Overview</a> ·
-  <a href="#core-features">Core Features</a> ·
-  <a href="#quick-reference">Quick Reference</a> ·
-  <a href="#installation--setup">Installation &amp; Setup</a> ·
-  <a href="#bucket-management">Bucket Management</a> ·
-  <a href="#project-structure">Project Structure</a> ·
-  <a href="#implementation-highlights">Implementation Highlights</a> ·
-  <a href="#security-notes">Security Notes</a> ·
-  <a href="#contributing--feedback">Contributing &amp; Feedback</a>
-</p>
-
----
-
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator">
+  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
 </div>
 
-## Overview
+<a id="overview"></a>
+## 📖 Overview
 
 **extra-** is a supplementary software package repository (bucket) for [Scoop](https://scoop.sh), maintained by [@CYojkoY](https://github.com/CYoJkoY).
 
@@ -42,32 +44,33 @@ This repository follows the Scoop manifest specification, and all packages are t
 ---
 
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator">
+  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
 </div>
 
-## Core Features
+<a id="core-features"></a>
+## ✨ Core Features
 
-<div style="background: #2A2A2A; border-radius: 12px; padding: 20px; margin: 16px 0;">
-  <h3>📦 One-Click Installation</h3>
-  <ul>
+<div style="background: #2A2A2A; border-radius: 20px; padding: 16px; margin: 16px 0;">
+  <h3 style="margin-top: 0; color: #D6D2CC;">📦 One-Click Installation</h3>
+  <ul style="color: #BEB8AE;">
     <li>Install with <code>scoop install extras/&lt;package&gt;</code> — automatically handles dependencies and PATH configuration</li>
     <li>Supports <code>scoop update</code> for unified updates of all installed packages</li>
     <li>All manifests are verified with <code>scoop hash</code> to ensure download integrity</li>
   </ul>
 </div>
 
-<div style="background: #2A2A2A; border-radius: 12px; padding: 20px; margin: 16px 0;">
-  <h3>🔧 Easy Maintenance</h3>
-  <ul>
+<div style="background: #2A2A2A; border-radius: 20px; padding: 16px; margin: 16px 0;">
+  <h3 style="margin-top: 0; color: #D6D2CC;">🔧 Easy Maintenance</h3>
+  <ul style="color: #BEB8AE;">
     <li>Manifest files are centralized in the <code>bucket/</code> directory with a clean structure</li>
     <li>Adding new packages or updating versions requires only modifying a single JSON file</li>
     <li>Supports <code>scoop info</code> for quick package details lookup</li>
   </ul>
 </div>
 
-<div style="background: #2A2A2A; border-radius: 12px; padding: 20px; margin: 16px 0;">
-  <h3>🤝 Community-Driven</h3>
-  <ul>
+<div style="background: #2A2A2A; border-radius: 20px; padding: 16px; margin: 16px 0;">
+  <h3 style="margin-top: 0; color: #D6D2CC;">🤝 Community-Driven</h3>
+  <ul style="color: #BEB8AE;">
     <li>Issues and Pull Requests are welcome to recommend new tools</li>
     <li>Maintainers will review and assist in refining manifests</li>
     <li>The goal is to complement, not replace, the official buckets</li>
@@ -77,10 +80,11 @@ This repository follows the Scoop manifest specification, and all packages are t
 ---
 
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator">
+  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
 </div>
 
-## Quick Reference
+<a id="quick-reference"></a>
+## 🎹 Quick Reference
 
 | Category | Command / Action | Description |
 |----------|------------------|-------------|
@@ -96,10 +100,11 @@ This repository follows the Scoop manifest specification, and all packages are t
 ---
 
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator">
+  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
 </div>
 
-## Installation & Setup
+<a id="installation-setup"></a>
+## 🚀 Installation & Setup
 
 ### Prerequisites
 
@@ -143,10 +148,11 @@ scoop config proxy <proxy-address>
 ---
 
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator">
+  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
 </div>
 
-## Bucket Management
+<a id="bucket-management"></a>
+## ⚙️ Bucket Management
 
 ### Adding a New Package
 
@@ -188,44 +194,46 @@ Consider setting up GitHub Actions or AppVeyor to automatically validate manifes
 ---
 
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator">
+  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
 </div>
 
-## Project Structure
+<a id="project-structure"></a>
+## 📁 Project Structure
 
-```
+```tree
 extras-
-├─ assets
-│  ├─ bar.svg
-│  ├─ dots.svg
-│  └─ logo-placeholder.svg
-├─ bin
-│  ├─ auto-pr.ps1
-│  ├─ checkhashes.ps1
-│  ├─ checkurls.ps1
-│  ├─ checkver.ps1
-│  ├─ formatjson.ps1
-│  ├─ missing-checkver.ps1
-│  └─ test.ps1
-├─ bucket
-│  ├─ app-name.json.template
-│  ├─ Context-Menu-Manager-Plus.json
-│  ├─ defender-control-disable.json
-│  ├─ defender-control-enable.json
-│  ├─ project-graph.json
-│  ├─ RealWorld-Cursor-Editor.json
-│  └─ Windhawk-dev.json
-├─ LICENSE
-└─ README.md
+├── 📁 assets
+│   ├── 🖼️ bar.svg
+│   ├── 🖼️ dots.svg
+│   └── 🖼️ logo-placeholder.svg
+├── 📁 bin
+│   ├── 📄 auto-pr.ps1
+│   ├── 📄 checkhashes.ps1
+│   ├── 📄 checkurls.ps1
+│   ├── 📄 checkver.ps1
+│   ├── 📄 formatjson.ps1
+│   ├── 📄 missing-checkver.ps1
+│   └── 📄 test.ps1
+├── 📁 bucket
+│   ├── 📄 app-name.json.template
+│   ├── 📄 Context-Menu-Manager-Plus.json
+│   ├── 📄 defender-control-disable.json
+│   ├── 📄 defender-control-enable.json
+│   ├── 📄 project-graph.json
+│   ├── 📄 RealWorld-Cursor-Editor.json
+│   └── 📄 Windhawk-dev.json
+├── ⚖️ LICENSE
+└── 📖 README.md
 ```
 
 ---
 
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator">
+  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
 </div>
 
-## Implementation Highlights
+<a id="implementation-highlights"></a>
+## 🧠 Implementation Highlights
 
 - **Manifest Validation**: All manifests are locally tested with `scoop install` before submission to ensure proper installation flow.
 - **Hash Verification**: Every package uses `scoop hash` to compute the SHA-256, preventing tampering of downloaded files.
@@ -238,10 +246,11 @@ extras-
 ---
 
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator">
+  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
 </div>
 
-## Security Notes
+<a id="security-notes"></a>
+## 🔐 Security Notes
 
 - **Source Trust**: All software in this bucket is sourced from official distribution channels (GitHub Releases, project websites, etc.). We do not host binary files — only download links and hash checksums are provided.
 - **Hash Verification**: Every manifest includes a `hash` field. During installation, the SHA-256 of the downloaded file is automatically verified; installation aborts if they do not match.
@@ -251,10 +260,11 @@ extras-
 ---
 
 <div align="center">
-  <img src="./assets/bar.svg" alt="bar separator">
+  <img src="./assets/bar.svg" alt="bar separator" width="240" height="8">
 </div>
 
-## Contributing & Feedback
+<a id="contributing-feedback"></a>
+## 🤝 Contributing & Feedback
 
 Issues and Pull Requests are welcome!
 Please ensure your contributions meet the following requirements:
