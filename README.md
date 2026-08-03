@@ -221,7 +221,8 @@ extras-
 │   ├── 📄 defender-control-enable.json
 │   ├── 📄 project-graph.json
 │   ├── 📄 RealWorld-Cursor-Editor.json
-│   └── 📄 Windhawk-dev.json
+│   ├── 📄 Windhawk-dev.json
+│   └── ...
 ├── ⚖️ LICENSE
 └── 📖 README.md
 ```
