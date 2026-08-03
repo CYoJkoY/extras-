@@ -33,12 +33,12 @@
     "checkver": {
         "url": "https://www.leigod.com/configs.json",
         "jsonpath": "$.windows.download_url",
-        "regex": "(?<path>.*LeiGodSetup.(.*).exe)"
+        "regex": "https://update\\.leigod\\.com/soft/leigod/win/(?<pathVer>[^/]+)/LeiGodSetup\\.(?<fileVer>[^\\.]+)\\.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https:$matchPath#/dl.7z"
+                "url": "https://update.leigod.com/soft/leigod/win/$matchPathVer/LeiGodSetup.$matchFileVer.exe#/dl.7z"
             }
         }
     }
