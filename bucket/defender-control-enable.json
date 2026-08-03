@@ -18,7 +18,7 @@
     "shortcuts": [
         [
             "enable-defender.exe",
-            "Disable Defender"
+            "Enable Defender"
         ]
     ],
     "checkver": {
