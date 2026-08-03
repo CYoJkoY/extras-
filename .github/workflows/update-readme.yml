@@ -21,8 +21,7 @@ jobs:
 
       - name: Run tree update script
         shell: pwsh
-        run: |
-          .\bin\update-readme-tree.ps1
+        run: .\bin\update-readme-tree.ps1
 
       - name: Commit and push if changed
         shell: pwsh

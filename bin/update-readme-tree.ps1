@@ -1,41 +1,27 @@
 <#
 .SYNOPSIS
-    Update README project tree block based on current repo structure.
-.DESCRIPTION
-    Scans all files/folders (except .git/.github) and updates the ```tree block.
+    Update the ```tree block in README.md with current repository structure.
 #>
 
-$repoRoot = (Get-Location).Path
+$repoRoot = Get-Location
 $readmePath = Join-Path $repoRoot "README.md"
+if (-not (Test-Path $readmePath)) { Write-Error "README.md missing"; exit 1 }
 
-if (-not (Test-Path $readmePath)) {
-    Write-Error "README.md not found"
-    exit 1
-}
-
-function Get-Icon {
-    param($item)
-    if ($item -is [System.IO.DirectoryInfo]) { return "📁" }
+function Get-Icon($item) {
+    if ($item.PSIsContainer) { return "📁" }
     $name = $item.Name.ToLower()
-    if ($name -eq "license" -or $name -match "^license(\..*)?$") { return "⚖️" }
-    if ($name -eq "readme.md" -or $name -eq "readme") { return "📖" }
-    if ($name -match "\.(png|jpg|jpeg|gif|svg|ico)$") { return "🖼️" }
+    if ($name -match "^license") { return "⚖️" }
+    if ($name -match "\.(svg|png|jpg|gif|ico)$") { return "🖼️" }
     if ($name -match "\.(ps1|py|sh|cmd|bat)$") { return "📄" }
     if ($name -match "\.(json|yml|yaml|xml|toml)$") { return "📄" }
     if ($name -match "\.(txt|md|rst|adoc)$") { return "📄" }
     if ($name -match "\.(exe|msi|dll|zip|7z|tar|gz)$") { return "📦" }
+    if ($name -eq "readme.md") { return "📖" }
     return "📄"
 }
 
-function Build-Tree {
-    param(
-        [string]$path,
-        [string]$prefix = "",
-        [string]$rootName = (Split-Path (Get-Location) -Leaf)
-    )
-
-    $items = Get-ChildItem -Path $path -Force | Where-Object { $_.Name -ne ".git" -and $_.Name -ne ".github" } | Sort-Object -Property @{Expression={$_.PSIsContainer}; Descending=$true}, Name
-
+function Build-Tree($path, $prefix = "") {
+    $items = Get-ChildItem $path -Force | Where-Object { $_.Name -notin @(".git", ".github") } | Sort-Object @{Expression={$_.PSIsContainer}; Descending=$true}, Name
     $lines = @()
     $count = $items.Count
     for ($i = 0; $i -lt $count; $i++) {
@@ -43,28 +29,28 @@ function Build-Tree {
         $isLast = ($i -eq $count - 1)
         $connector = if ($isLast) { "└── " } else { "├── " }
         $icon = Get-Icon $item
-        $line = "$prefix$connector$icon $($item.Name)"
-        $lines += $line
-
+        $lines += "$prefix$connector$icon $($item.Name)"
         if ($item.PSIsContainer) {
             $subPrefix = if ($isLast) { "$prefix    " } else { "$prefix│   " }
-            $subLines = Build-Tree -path $item.FullName -prefix $subPrefix
-            $lines += $subLines
+            $lines += Build-Tree $item.FullName $subPrefix
         }
     }
     return $lines
 }
 
-$treeLines = Build-Tree -path $repoRoot
+$tree = Build-Tree $repoRoot
+$rootName = (Split-Path $repoRoot -Leaf)
+$treeLines = @($rootName) + $tree
 
-$content = Get-Content -Path $readmePath -Raw -ErrorAction Stop
+$content = Get-Content $readmePath -Raw
 $pattern = '(?s)(```tree\n)(.*?)(\n```)'
-$replacement = "```tree`n$($treeLines -join "`n")`n```"
+$newBlock = "```tree`n$($treeLines -join "`n")`n```"
 
 if ($content -match $pattern) {
-    $newContent = $content -replace $pattern, $replacement
-    Set-Content -Path $readmePath -Value $newContent -NoNewline
+    $newContent = $content -replace $pattern, $newBlock
+    # Write without BOM, CRLF line endings (default on Windows)
+    [System.IO.File]::WriteAllText($readmePath, $newContent, [System.Text.UTF8Encoding]::new($false))
     Write-Host "README updated."
 } else {
-    Write-Warning "No ```tree block found. Nothing updated."
+    Write-Warning "No ```tree block found in README. Nothing updated."
 }
