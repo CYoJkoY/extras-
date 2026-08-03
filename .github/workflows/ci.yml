@@ -38,6 +38,13 @@ jobs:
         with:
           modules-to-cache: BuildHelpers, Pester
           shell: ${{ matrix.shell }}
+      - name: Ensure trailing newlines
+        run: |
+          Get-ChildItem -Recurse -File -Exclude *.git | ForEach-Object {
+            $c = Get-Content $_.FullName -Raw
+            if ($c -and $c[-1] -ne "`n") { Add-Content $_.FullName "`n" -NoNewline }
+          }
+        shell: pwsh
       - name: Run tests
         run: |
           $env:SCOOP_HOME="$(Convert-Path '.\scoop_core')"
