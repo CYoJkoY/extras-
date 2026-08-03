@@ -36,6 +36,10 @@
         "regex": "(?<path>.*LeiGodSetup.(.*).exe)"
     },
     "autoupdate": {
-        "url": "https:$matchPath#/dl.7z"
+        "architecture": {
+            "64bit": {
+                "url": "https:$matchPath#/dl.7z"
+            }
+        }
     }
 }
