@@ -10,7 +10,7 @@
   <a href="https://github.com/CYoJkoY/extras-"><img src="https://img.shields.io/github/repo-size/CYoJkoY/extras-?style=flat-square" alt="GitHub repo size"></a>
   <a href="https://github.com/CYoJkoY/extras-/blob/master/LICENSE"><img src="https://img.shields.io/github/license/CYoJkoY/extras-?style=flat-square" alt="GitHub license"></a>
   <a href="#"><img src="https://img.shields.io/badge/Platform-Windows-8A9E8B?style=flat-square" alt="Platform"></a>
-  <a href="#"><img src="https://img.shields.io/badge/💰-Support-9E8F7E?style=flat-square&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support"></a>
+  <a href="https://cyojkoy.github.io/Payment/"><img src="https://img.shields.io/badge/💰-Support-9E8F7E?style=flat-square&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support"></a>
 </p>
 
 <p align="center" style="margin-top: -10px;">
