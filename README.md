@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://scoop.sh"><img src="https://img.shields.io/badge/Scoop-extra--blue?style=flat-square&logo=scoop" alt="Scoop"></a>
   <a href="https://github.com/CYoJkoY/extras-"><img src="https://img.shields.io/github/repo-size/CYoJkoY/extras-?style=flat-square" alt="GitHub repo size"></a>
-  <a href="https://github.com/CYoJkoY/extras-/blob/main/LICENSE"><img src="https://img.shields.io/github/license/CYoJkoY/extras-?style=flat-square" alt="GitHub license"></a>
+  <a href="https://github.com/CYoJkoY/extras-/blob/master/LICENSE"><img src="https://img.shields.io/github/license/CYoJkoY/extras-?style=flat-square" alt="GitHub license"></a>
   <a href="#"><img src="https://img.shields.io/badge/Platform-Windows-8A9E8B?style=flat-square" alt="Platform"></a>
   <a href="#"><img src="https://img.shields.io/badge/💰-Support-9E8F7E?style=flat-square&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support"></a>
 </p>
@@ -27,7 +27,9 @@
 
 ---
 
-<img src="./assets/dots.svg" alt="dots separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/dots.svg" alt="dots separator">
+</div>
 
 ## Overview
 
@@ -39,7 +41,9 @@ This repository follows the Scoop manifest specification, and all packages are t
 
 ---
 
-<img src="./assets/dots.svg" alt="dots separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/dots.svg" alt="dots separator">
+</div>
 
 ## Core Features
 
@@ -72,7 +76,9 @@ This repository follows the Scoop manifest specification, and all packages are t
 
 ---
 
-<img src="./assets/dots.svg" alt="dots separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/dots.svg" alt="dots separator">
+</div>
 
 ## Quick Reference
 
@@ -89,7 +95,9 @@ This repository follows the Scoop manifest specification, and all packages are t
 
 ---
 
-<img src="./assets/dots.svg" alt="dots separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/dots.svg" alt="dots separator">
+</div>
 
 ## Installation & Setup
 
@@ -134,7 +142,9 @@ scoop config proxy <proxy-address>
 
 ---
 
-<img src="./assets/dots.svg" alt="dots separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/dots.svg" alt="dots separator">
+</div>
 
 ## Bucket Management
 
@@ -177,7 +187,9 @@ Consider setting up GitHub Actions or AppVeyor to automatically validate manifes
 
 ---
 
-<img src="./assets/dots.svg" alt="dots separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/dots.svg" alt="dots separator">
+</div>
 
 ## Project Structure
 
@@ -209,7 +221,9 @@ extras-
 
 ---
 
-<img src="./assets/dots.svg" alt="dots separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/dots.svg" alt="dots separator">
+</div>
 
 ## Implementation Highlights
 
@@ -223,7 +237,9 @@ extras-
 
 ---
 
-<img src="./assets/dots.svg" alt="dots separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/dots.svg" alt="dots separator">
+</div>
 
 ## Security Notes
 
@@ -234,9 +250,11 @@ extras-
 
 ---
 
-<img src="./assets/bar.svg" alt="bar separator" style="display: block; margin: 0 auto;">
+<div align="center">
+  <img src="./assets/bar.svg" alt="bar separator">
+</div>
 
-## 🤝 Contributing & Feedback
+## Contributing & Feedback
 
 Issues and Pull Requests are welcome!
 Please ensure your contributions meet the following requirements:
