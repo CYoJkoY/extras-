@@ -38,11 +38,14 @@ jobs:
         with:
           modules-to-cache: BuildHelpers, Pester
           shell: ${{ matrix.shell }}
-      - name: Normalize line endings to CRLF
+      - name: Normalize line endings and ensure trailing newline
         run: |
           Get-ChildItem -Recurse -File -Exclude *.git | ForEach-Object {
             $c = [IO.File]::ReadAllText($_.FullName)
             $c = $c -replace "`r`n", "`n" -replace "`n", "`r`n"
+            if ($c -and $c[-1] -ne "`n") {
+              $c += "`r`n"
+            }
             [IO.File]::WriteAllText($_.FullName, $c)
           }
         shell: pwsh
