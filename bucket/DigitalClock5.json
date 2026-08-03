@@ -12,7 +12,7 @@
             "hash": "EAA5E1DE193C7F79AF4CD79D3AB6FA96E732F05CE94FE825BC402D0ADFE49A6F"
         }
     },
-    "bin": "DigitalClock5.exe",
+    "bin": "DigitalClock5/DigitalClock5.exe",
     "shortcuts": [
         [
             "DigitalClock5.exe",
