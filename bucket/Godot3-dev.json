@@ -8,11 +8,11 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://downloads.tuxfamily.org/godotengine/3.7/dev1/Godot_v3.7-dev1_win64.exe.zip",
+            "url": "https://downloads.godotengine.org/?version=3.7&flavor=dev1&slug=win64.exe.zip&platform=windows.64",
             "hash": "sha512:4A573D9024BD577B315310BADBA0488FD51C296EB7770D71A77020FB62015E6DD18BAE2D02EF44800E1259BC0E553022392C4B06601B7890DC4806D86B9A7FFF"
         },
         "32bit": {
-            "url": "https://downloads.tuxfamily.org/godotengine/3.7/dev1/Godot_v3.7-dev1_win32.exe.zip",
+            "url": "https://downloads.godotengine.org/?version=3.7&flavor=dev1&slug=win32.exe.zip&platform=windows.32",
             "hash": "sha512:E793991400DDAD8D313B0D569B47D6EC5D1FA86A06798F78E496798D83951DDA1168785A2D280FCD2F946BA3D99B366EA7731E01FDA65A50FF79219C5256B221"
         }
     },
@@ -42,10 +42,10 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://downloads.tuxfamily.org/godotengine/$majorVersion.$minorVersion/$preRelease/Godot_v$version_win64.exe.zip"
+                "url": "https://downloads.godotengine.org/?version=$majorVersion.$minorVersion&flavor=$preRelease&slug=win64.exe.zip&platform=windows.64"
             },
             "32bit": {
-                "url": "https://downloads.tuxfamily.org/godotengine/$majorVersion.$minorVersion/$preRelease/Godot_v$version_win32.exe.zip"
+                "url": "https://downloads.godotengine.org/?version=$majorVersion.$minorVersion&flavor=$preRelease&slug=win32.exe.zip&platform=windows.32"
             }
         },
         "hash": {
