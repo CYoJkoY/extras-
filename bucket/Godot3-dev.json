@@ -27,10 +27,10 @@
         "}",
         "New-Item -Force -Path \"$dir\" -Name '._sc_' -ItemType File | Out-Null"
     ],
-    "bin": "godot.exe",
+    "bin": "godot3-dev.exe",
     "shortcuts": [
         [
-            "godot.exe",
+            "godot3-dev.exe",
             "Godot3-dev"
         ]
     ],
@@ -42,10 +42,10 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://downloads.tuxfamily.org/godotengine/$majorVersion.$minorVersion/dev$patchVersion/Godot_v$version_win64.exe.zip"
+                "url": "https://downloads.tuxfamily.org/godotengine/$majorVersion.$minorVersion/$preRelease/Godot_v$version_win64.exe.zip"
             },
             "32bit": {
-                "url": "https://downloads.tuxfamily.org/godotengine/$majorVersion.$minorVersion/dev$patchVersion/Godot_v$version_win32.exe.zip"
+                "url": "https://downloads.tuxfamily.org/godotengine/$majorVersion.$minorVersion/$preRelease/Godot_v$version_win32.exe.zip"
             }
         },
         "hash": {
