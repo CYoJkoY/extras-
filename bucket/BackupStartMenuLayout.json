@@ -7,7 +7,7 @@
         "url": "https://www.sordum.org/eula/"
     },
     "url": "https://www.sordum.org/files/download/backup-start-menu-layout/BackupSML.zip",
-    "hash": "11f3629d6cf42f0acbbf49e30932dafd1f50bb07b56ee6521d35a89bbc3923dc",
+    "hash": "sha256:11f3629d6cf42f0acbbf49e30932dafd1f50bb07b56ee6521d35a89bbc3923dc",
     "extract_dir": "BackupSML",
     "architecture": {
         "32bit": {
