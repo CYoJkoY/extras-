@@ -13,8 +13,7 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/GDRETools/gdsdecomp",
-        "regex": "/releases/tag/(?:v|V)?([\\w-.]+)"
+        "github": "https://github.com/GDRETools/gdsdecomp"
     },
     "autoupdate": {
         "url": "https://github.com/GDRETools/gdsdecomp/releases/download/v$version/GDRE_tools-v$version-windows.zip"
