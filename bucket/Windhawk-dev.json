@@ -29,7 +29,8 @@
         "rm_shim 'windhawk' \"$(shimdir $global)\""
     ],
     "checkver": {
-        "github": "https://github.com/ramensoftware/windhawk"
+        "url": "https://api.github.com/repos/ramensoftware/windhawk/releases",
+        "regex": "\"tag_name\":\\s*\"(v?[\\d.]+-alpha\\.\\d+)\""
     },
     "autoupdate": {
         "url": "https://github.com/ramensoftware/windhawk/releases/download/$version/windhawk_setup_offline.exe"
