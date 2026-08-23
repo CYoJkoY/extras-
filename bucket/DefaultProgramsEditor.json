@@ -1,0 +1,23 @@
+{
+    "version": "2.7.2676.2142",
+    "description": "Default Programs Editor: fix file associations",
+    "homepage": "https://defaultprogramseditor.com/",
+    "license": "Unknown",
+    "url": "https://defaultprogramseditor.com/download#/dl.zip",
+    "hash": "D84E0588289A661E796C761CC40BA3CB53A7824D955A8C260E2AC9F74B77B827",
+    "extract_dir": "Default Programs Editor",
+    "bin": "Default Programs Editor.exe",
+    "shortcuts": [
+        [
+        "Default Programs Editor.exe",
+        "Default Programs Editor"
+        ]
+    ],
+    "checkver": {
+        "url": "https://defaultprogramseditor.com/changelog",
+        "regex": "Version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://defaultprogramseditor.com/download#/dl.zip"
+    }
+}
