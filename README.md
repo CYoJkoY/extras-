@@ -1,207 +1,209 @@
 <div align="center" style="background-color: #1E1E1E; padding: 40px 20px; border-radius: 28px;">
-
   <div style="background: #2A2A2A; border-radius: 36px; padding: 42px 18px; margin-bottom: 28px;">
-    <img src="./assets/logo-placeholder.svg" width="80" height="80" alt="extra- bucket logo" style="border-radius: 16px;">
+    <img src="./assets/logo-placeholder.svg" alt="extra- bucket" width="80" height="80" style="border-radius: 16px;">
     <h1 style="color: #E6DED6; font-weight: 350; letter-spacing: 2px; margin: 18px 0 8px;">extra- — Scoop Bucket</h1>
-    <p style="color: #BEB8AE; font-size: 1.2em; max-width: 600px; margin: 0 auto;">The Tool Supply Station Outside Scoop's Official Repositories</p>
-    <p style="color: #8A9E8B; font-size: 0.95em; margin-top: 12px;">A supplementary software package repository for the Windows package manager Scoop</p>
+    <p style="color: #BEB8AE; font-size: 1.2em; max-width: 700px; margin: 0 auto;">A curated supplementary Scoop bucket for useful Windows software that is not available in the official buckets.</p>
+    <p style="color: #8A9E8B; font-size: 0.95em; margin-top: 12px;">Scoop manifests · Windows software · Verified hashes · Community contributions</p>
   </div>
 
   <p>
-    <a href="https://scoop.sh"><img src="https://img.shields.io/badge/Scoop-extra--blue?style=flat-square&logo=scoop" alt="Scoop"></a>
-    <a href="https://github.com/CYoJkoY/extras-"><img src="https://img.shields.io/github/repo-size/CYoJkoY/extras-?style=flat-square" alt="GitHub repo size"></a>
-    <a href="https://github.com/CYoJkoY/extras-/blob/master/LICENSE"><img src="https://img.shields.io/github/license/CYoJkoY/extras-?style=flat-square" alt="GitHub license"></a>
-    <a href="#"><img src="https://img.shields.io/badge/Platform-Windows-8A9E8B?style=flat-square" alt="Platform"></a>
-    <a href="https://cyojkoy.github.io/Payment/"><img src="https://img.shields.io/badge/💰-Support-9E8F7E?style=flat-square&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support"></a>
+    <a href="https://scoop.sh"><img src="https://img.shields.io/badge/Scoop-Bucket-8A9E8B?style=flat-square&logo=scoop" alt="Scoop"></a>
+    <a href="https://github.com/CYoJkoY/extras-"><img src="https://img.shields.io/github/repo-size/CYoJkoY/extras-?style=flat-square" alt="Repository size"></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-7A8E8E?style=flat-square" alt="MIT License"></a>
+    <img src="https://img.shields.io/badge/Platform-Windows-9E8F7E?style=flat-square" alt="Windows">
+    <a href="https://cyojkoy.github.io/Payment/"><img src="https://img.shields.io/badge/Support_Me-9E8F7E?style=flat-square&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support Me"></a>
   </p>
 
   <p style="word-spacing: 6px; margin-top: 20px;">
-    <a href="#overview" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Overview</a> &nbsp;•&nbsp;
-    <a href="#core-features" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Core Features</a> &nbsp;•&nbsp;
-    <a href="#quick-reference" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Quick Reference</a> &nbsp;•&nbsp;
-    <a href="#installation-setup" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Installation & Setup</a> &nbsp;•&nbsp;
-    <a href="#bucket-management" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Bucket Management</a> &nbsp;•&nbsp;
-    <a href="#project-structure" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Project Structure</a> &nbsp;•&nbsp;
-    <a href="#implementation-highlights" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Implementation Highlights</a> &nbsp;•&nbsp;
-    <a href="#security-notes" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Security Notes</a> &nbsp;•&nbsp;
-    <a href="#contributing-feedback" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Contributing & Feedback</a>
+    <a href="#-overview" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Overview</a> &nbsp;•&nbsp;
+    <a href="#-core-features" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Core Features</a> &nbsp;•&nbsp;
+    <a href="#-quick-reference" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Quick Reference</a> &nbsp;•&nbsp;
+    <a href="#-installation--setup" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Installation</a> &nbsp;•&nbsp;
+    <a href="#-bucket-management" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Bucket Management</a> &nbsp;•&nbsp;
+    <a href="#-project-structure" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Structure</a> &nbsp;•&nbsp;
+    <a href="#-security-notes" style="color: #8A9E8B; text-decoration: none; border-bottom: 1px dotted #5A6B6B;">Security</a>
   </p>
 </div>
 
 <div align="center">
-  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
+  <img src="./assets/dots.svg" alt="separator" width="160" height="12">
 </div>
 
-<a id="overview"></a>
 ## 📖 Overview
 
-**extra-** is a supplementary software package repository (bucket) for [Scoop](https://scoop.sh), maintained by [@CYojkoY](https://github.com/CYoJkoY).
+**extra-** is a supplementary [Scoop](https://scoop.sh) bucket maintained by [@CYojkoY](https://github.com/CYoJkoY).
 
-Scoop's official buckets (`main`, `extras`, etc.) include a large number of commonly used applications, but many useful tools remain absent. **extra-** aims to fill these gaps, allowing Windows users to install these tools with a unified `scoop install` command, eliminating the need for manual downloads, extraction, and PATH configuration.
+Scoop already provides extensive official buckets such as `main` and `extras`. This bucket focuses on additional utilities and specialized Windows applications that may not fit those official collections or may be useful to users of this repository.
 
-This repository follows the Scoop manifest specification, and all packages are tested and verified to ensure a stable and reliable installation process.
+The repository contains Scoop manifest files rather than packaged binaries. Scoop downloads software from the URLs defined by each manifest, verifies the supplied hash when one is present, extracts or installs the package, and applies the manifest's configuration.
 
----
+> **Note**  
+> This is an independent community bucket. Package availability, upstream release schedules, and manifest compatibility depend on the software publishers and the Scoop ecosystem.
 
-<div align="center">
-  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
-</div>
-
-<a id="core-features"></a>
 ## ✨ Core Features
 
 <div style="background: #2A2A2A; border-radius: 20px; padding: 16px; margin: 16px 0;">
-  <h3 style="margin-top: 0; color: #D6D2CC;">📦 One-Click Installation</h3>
+  <h3 style="margin-top: 0; color: #D6D2CC;">📦 Scoop-native Installation</h3>
   <ul style="color: #BEB8AE;">
-    <li>Install with <code>scoop install extras/&lt;package&gt;</code> — automatically handles dependencies and PATH configuration</li>
-    <li>Supports <code>scoop update</code> for unified updates of all installed packages</li>
-    <li>All manifests are verified with <code>scoop hash</code> to ensure download integrity</li>
+    <li>Install supported applications through the standard <code>scoop install</code> workflow.</li>
+    <li>Use Scoop's normal update, uninstall, and package-management commands.</li>
+    <li>Let Scoop manage extraction, shims, PATH integration, and application directories according to each manifest.</li>
   </ul>
 </div>
 
 <div style="background: #2A2A2A; border-radius: 20px; padding: 16px; margin: 16px 0;">
-  <h3 style="margin-top: 0; color: #D6D2CC;">🔧 Easy Maintenance</h3>
+  <h3 style="margin-top: 0; color: #D6D2CC;">🔧 Maintainable Manifests</h3>
   <ul style="color: #BEB8AE;">
-    <li>Manifest files are centralized in the <code>bucket/</code> directory with a clean structure</li>
-    <li>Adding new packages or updating versions requires only modifying a single JSON file</li>
-    <li>Supports <code>scoop info</code> for quick package details lookup</li>
+    <li>Keep package definitions in the centralized <code>bucket/</code> directory.</li>
+    <li>Use standard Scoop manifest fields such as <code>version</code>, <code>url</code>, <code>hash</code>, <code>bin</code>, <code>depends</code>, <code>checkver</code>, and <code>autoupdate</code>.</li>
+    <li>Use repository scripts to support manifest checks, formatting, hash validation, URL validation, and version maintenance.</li>
   </ul>
 </div>
 
 <div style="background: #2A2A2A; border-radius: 20px; padding: 16px; margin: 16px 0;">
-  <h3 style="margin-top: 0; color: #D6D2CC;">🤝 Community-Driven</h3>
+  <h3 style="margin-top: 0; color: #D6D2CC;">🔍 Reproducible Package Metadata</h3>
   <ul style="color: #BEB8AE;">
-    <li>Issues and Pull Requests are welcome to recommend new tools</li>
-    <li>Maintainers will review and assist in refining manifests</li>
-    <li>The goal is to complement, not replace, the official buckets</li>
+    <li>Record upstream download locations instead of storing application binaries in the repository.</li>
+    <li>Use SHA-256 hashes where supported to detect changed or unexpected downloads.</li>
+    <li>Keep version and update metadata close to each package definition.</li>
   </ul>
 </div>
 
----
-
-<div align="center">
-  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
+<div style="background: #2A2A2A; border-radius: 20px; padding: 16px; margin: 16px 0;">
+  <h3 style="margin-top: 0; color: #D6D2CC;">🤝 Community-friendly Contributions</h3>
+  <ul style="color: #BEB8AE;">
+    <li>Accept package suggestions, manifest improvements, and update fixes through GitHub.</li>
+    <li>Encourage local installation testing before submitting manifest changes.</li>
+    <li>Keep the bucket focused on software that complements rather than duplicates the official Scoop ecosystem.</li>
+  </ul>
 </div>
 
-<a id="quick-reference"></a>
 ## 🎹 Quick Reference
 
-| Category | Command / Action | Description |
-|----------|------------------|-------------|
-| **Add bucket** | `scoop bucket add extras https://github.com/CYoJkoY/extras-` | Add this repository as a Scoop bucket |
-| **Install package** | `scoop install extras/<package>` | Install a specific package from this bucket |
-| **View package info** | `scoop info <package>` | Display package details (version, URL, dependencies, etc.) |
-| **Update all packages** | `scoop update *` | Update all packages installed via Scoop |
-| **List installed packages** | `scoop list` | Show all currently installed packages |
-| **Remove package** | `scoop uninstall <package>` | Uninstall a specific package |
-| **Test manifest locally** | `scoop install ./bucket/<package>.json` | Validate manifest locally before submitting |
-| **Compute file hash** | `scoop hash <file-path>` | Generate SHA-256 hash for the manifest |
+| Task | Command |
+|---|---|
+| Add the bucket | <code>scoop bucket add extras https://github.com/CYoJkoY/extras-</code> |
+| Search this bucket | <code>scoop search &lt;package&gt;</code> |
+| Install a package | <code>scoop install extras/&lt;package&gt;</code> |
+| Inspect package metadata | <code>scoop info extras/&lt;package&gt;</code> |
+| Update Scoop applications | <code>scoop update *</code> |
+| List installed packages | <code>scoop list</code> |
+| Remove a package | <code>scoop uninstall &lt;package&gt;</code> |
+| Test a manifest locally | <code>scoop install ./bucket/&lt;package&gt;.json</code> |
+| Calculate a file hash | <code>scoop hash &lt;file&gt;</code> |
 
----
-
-<div align="center">
-  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
-</div>
-
-<a id="installation-setup"></a>
-## 🚀 Installation & Setup
+## 🚀 Installation &amp; Setup
 
 ### Prerequisites
 
-- **Operating System**: Windows 7 / 8 / 10 / 11
-- **Scoop**: Already installed and configured (if not, run the following commands first)
+- Windows
+- [Scoop](https://scoop.sh) installed and available in PowerShell
+
+If Scoop is not installed yet:
 
 ```powershell
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 irm get.scoop.sh | iex
 ```
 
-### Quick Start
-
-1. **Add this bucket**
+### Add the bucket
 
 ```powershell
 scoop bucket add extras https://github.com/CYoJkoY/extras-
 ```
 
-2. **View available packages**
+### Search for a package
 
 ```powershell
-scoop search extras/
+scoop search <package>
 ```
 
-3. **Install a package**
+### Install a package
 
 ```powershell
 scoop install extras/<package>
 ```
 
-### Optional Configuration
-
-- **Configure bucket priority**: If a package exists in both this bucket and an official bucket, adjust bucket order to control the installation source
-- **Use a proxy**: If your network is restricted, configure Scoop to use a proxy:
+### Update later
 
 ```powershell
-scoop config proxy <proxy-address>
+scoop update
+scoop update <package>
 ```
 
----
+> **Tip**  
+> Scoop bucket names are local aliases. The command above registers this repository under the `extras` alias; use the same alias when referring to manifests from this bucket.
 
-<div align="center">
-  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
-</div>
-
-<a id="bucket-management"></a>
 ## ⚙️ Bucket Management
 
-### Adding a New Package
+### Add a package
 
-1. Create `<package>.json` in the `bucket/` directory, following the [Scoop Manifest Specification](https://github.com/ScoopInstaller/Scoop/wiki/App-Manifests).
-2. Test the installation locally:
+1. Create a new JSON manifest in `bucket/`.
+2. Follow the [Scoop manifest specification](https://github.com/ScoopInstaller/Scoop/wiki/App-Manifests).
+3. Test the manifest locally.
+4. Verify the download URL and hash.
+5. Submit the change through a pull request.
+
+Example filename:
+
+```text
+bucket/example-tool.json
+```
+
+### Update a package
+
+Update the manifest's version and download information, then refresh the hash and verify the installation path.
 
 ```powershell
+scoop hash <downloaded-file>
 scoop install ./bucket/<package>.json
 ```
 
-3. Submit a Pull Request after confirming it works correctly.
+### Common manifest fields
 
-### Updating an Existing Package
+| Field | Purpose |
+|---|---|
+| `version` | Current upstream version. |
+| `description` | Human-readable package description. |
+| `homepage` | Official project homepage. |
+| `license` | Upstream software license identifier. |
+| `url` | Download URL or URL collection. |
+| `hash` | Expected SHA-256 hash. |
+| `bin` | Executables exposed through Scoop shims. |
+| `depends` | Required package dependencies. |
+| `extract_dir` | Directory to enter after extraction. |
+| `checkver` | Rules for discovering newer versions. |
+| `autoupdate` | Templates used to construct update URLs. |
 
-- Modify the `version` and `url` fields in the manifest
-- Update the `hash` field using `scoop hash <downloaded-file>`
-- Test the installation and submit a PR
+### Repository helper scripts
 
-### Manifest Key Fields Reference
+The repository includes PowerShell helpers under `bin/` for common maintenance tasks such as hash checks, URL checks, version checks, formatting, and local testing.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `version` | string | Software version, e.g. `1.2.3` |
-| `description` | string | Brief description |
-| `homepage` | string | Project homepage URL |
-| `license` | string | License identifier (e.g. `MIT`, `GPL-3.0`) |
-| `url` | string | Download URL (supports `.zip`, `.7z`, `.exe`, etc.) |
-| `hash` | string | SHA-256 hash of the file |
-| `bin` | string/array | Path to executable(s) to add to PATH after installation |
-| `depends` | array | Dependencies on other packages |
-| `extract_dir` | string | Subdirectory to enter after extraction |
-| `checkver` | object/string | Rules for version update detection |
-| `autoupdate` | object | Auto-update URL template |
+## 🧠 Implementation Highlights
 
-### Automated Checks (Recommended)
+### Standard Scoop manifests
 
-Consider setting up GitHub Actions or AppVeyor to automatically validate manifests, following the [Scoop official CI template](https://github.com/ScoopInstaller/Scoop/wiki/AppVeyor).
+The repository uses JSON manifest files compatible with Scoop's package model. Each manifest describes where software should be downloaded from and how Scoop should install and expose it.
 
----
+### Hash-based verification
 
-<div align="center">
-  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
-</div>
+When a manifest contains a hash, Scoop verifies the downloaded file against that expected digest before completing installation. This gives package definitions a reproducible integrity check without requiring this repository to host binary payloads.
 
-<a id="project-structure"></a>
+### Version and auto-update metadata
+
+`checkver` and `autoupdate` can reduce the amount of manual maintenance required for packages whose upstream releases follow predictable patterns.
+
+### Repository-side maintenance tooling
+
+The `bin/` directory contains small PowerShell utilities that support repeatable checks across the bucket. This keeps common validation tasks close to the manifests they maintain.
+
 ## 📁 Project Structure
 
 ```tree
-extras-
+extras-/
+├── 📁 .github
+│   └── 📁 workflows
+│       └── ⚙️ ...
 ├── 📁 assets
 │   ├── 🖼️ bar.svg
 │   ├── 🖼️ dots.svg
@@ -227,80 +229,44 @@ extras-
 └── 📖 README.md
 ```
 
----
-
-<div align="center">
-  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
-</div>
-
-<a id="implementation-highlights"></a>
-## 🧠 Implementation Highlights
-
-- **Manifest Validation**: All manifests are locally tested with `scoop install` before submission to ensure proper installation flow.
-- **Hash Verification**: Every package uses `scoop hash` to compute the SHA-256, preventing tampering of downloaded files.
-- **Version Detection**: The `checkver` field enables automatic version detection for quick updates.
-- **Auto-Update Templates**: The `autoupdate` field dynamically generates new download URLs, reducing maintenance overhead.
-- **Minimal Dependencies**: Relies only on Scoop core functionality, with no additional tools required.
-- **Clean Directory Structure**: All manifests are centrally stored for easy batch management and browsing.
-- **Community Friendly**: Issue and PR templates are in place to lower contribution barriers.
-
----
-
-<div align="center">
-  <img src="./assets/dots.svg" alt="dots separator" width="160" height="12">
-</div>
-
-<a id="security-notes"></a>
 ## 🔐 Security Notes
 
-- **Source Trust**: All software in this bucket is sourced from official distribution channels (GitHub Releases, project websites, etc.). We do not host binary files — only download links and hash checksums are provided.
-- **Hash Verification**: Every manifest includes a `hash` field. During installation, the SHA-256 of the downloaded file is automatically verified; installation aborts if they do not match.
-- **User Responsibility**: Please verify the source and license of any software before use. If you have security concerns about a package, review its `homepage` and source repository.
-- **Report Issues**: If you encounter any suspicious manifest or download link, please file an Issue immediately. Maintainers will respond as soon as possible.
+- **Repository contents:** This repository stores manifests and maintenance scripts rather than application binaries.
+- **Download sources:** Review the upstream homepage and download URL for each package before installation, especially for software with elevated privileges.
+- **Hashes:** Keep manifest hashes current. A changed or missing hash should be investigated rather than ignored.
+- **Software trust:** A valid hash confirms that the downloaded file matches the manifest expectation; it does not prove that the upstream software itself is trustworthy.
+- **Issue reports:** Do not publish private credentials, access tokens, or sensitive local system information when reporting a manifest problem.
 
----
+## 🤝 Contributing &amp; Feedback
 
-<div align="center">
-  <img src="./assets/bar.svg" alt="bar separator" width="240" height="8">
-</div>
+Issues and pull requests are welcome.
 
-<a id="contributing-feedback"></a>
-## 🤝 Contributing & Feedback
+When adding or updating a manifest, include:
 
-Issues and Pull Requests are welcome!
-Please ensure your contributions meet the following requirements:
+1. The official software name and homepage.
+2. A working download URL.
+3. The correct version and SHA-256 hash.
+4. A successful local installation test.
+5. `checkver` and `autoupdate` metadata when practical.
 
-- Package name matches the official software name
-- Version number is accurate
-- Correct download URL and SHA-256 hash are provided
-- Local installation test passes (`scoop install ./bucket/<package>.json`)
-
-If a tool you'd like to recommend is not yet available in any official bucket, this repository is the perfect place for it.
-
----
+For package suggestions, explain why the software is useful and why a dedicated manifest in this bucket is appropriate.
 
 ## 📄 License
 
-This project is licensed under the [MIT License](./LICENSE).
-You are free to use, modify, and distribute it, as long as the copyright notice is retained.
+This project is licensed under the **MIT License**.
 
----
+See [`LICENSE`](./LICENSE) for the complete license text.
 
 ## 💰 Support the Author
 
-If this bucket has saved you time hunting for installers, consider buying me a coffee! ☕
+If this bucket saves you time searching for Windows software, consider supporting the project.
 
 <div align="center">
   <a href="https://cyojkoy.github.io/Payment/">
-    <img src="https://img.shields.io/badge/👉_Click_Here_to_Support-9E8F7E?style=for-the-badge&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support Me Button">
+    <img src="https://img.shields.io/badge/Support_the_Author-9E8F7E?style=for-the-badge&logo=buy-me-a-coffee&logoColor=BEB8AE" alt="Support the Author">
   </a>
 </div>
 
 <div align="center">
-  <br>
-  <i style="color: #8A9E8B;">Made with ❤️ and Scoop</i>
+  <sub>Built to extend the Scoop ecosystem with practical Windows software and maintainable manifests.</sub>
 </div>
-
----
-
-<p align="center" style="color: #8A9E8B;">⭐ If this bucket helps you, give it a Star!</p>
