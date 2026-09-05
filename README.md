@@ -1,9 +1,6 @@
-<div align="center" style="background-color: #1E1E1E; padding: 40px 20px; border-radius: 28px;">
-  <div style="background: #2A2A2A; border-radius: 36px; padding: 42px 18px; margin-bottom: 28px;">
-    <img src="./assets/logo-placeholder.svg" alt="extra- bucket" width="80" height="80" style="border-radius: 16px;">
-    <h1 style="color: #E6DED6; font-weight: 350; letter-spacing: 2px; margin: 18px 0 8px;">extra- — Scoop Bucket</h1>
-    <p style="color: #BEB8AE; font-size: 1.2em; max-width: 700px; margin: 0 auto;">A curated supplementary Scoop bucket for useful Windows software that is not available in the official buckets.</p>
-    <p style="color: #8A9E8B; font-size: 0.95em; margin-top: 12px;">Scoop manifests · Windows software · Verified hashes · Community contributions</p>
+<div align="center" style="background-color: #1E1E1E; padding: 28px 18px; border-radius: 28px;">
+  <div style="background: #2A2A2A; border-radius: 30px; padding: 16px; margin-bottom: 24px; overflow: hidden;">
+    <img src="./assets/hero.svg" alt="extra- — Scoop Bucket Hero" width="960" style="display: block; width: 100%; max-width: 960px; height: auto; margin: 0 auto;">
   </div>
 
   <p>
@@ -207,6 +204,7 @@ extras-/
 ├── 📁 assets
 │   ├── 🖼️ bar.svg
 │   ├── 🖼️ dots.svg
+│   ├── 🖼️ hero.svg
 │   └── 🖼️ logo-placeholder.svg
 ├── 📁 bin
 │   ├── 📄 auto-pr.ps1
