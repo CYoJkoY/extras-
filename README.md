@@ -8,7 +8,7 @@
   <p>
     <a href="https://scoop.sh"><img src="https://img.shields.io/badge/Scoop-Bucket-8A9E8B?style=flat-square&logo=scoop" alt="Scoop bucket"></a>
     <a href="https://github.com/CYoJkoY/extras-"><img src="https://img.shields.io/github/repo-size/CYoJkoY/extras-?style=flat-square" alt="Repository size"></a>
-    <img src="https://img.shields.io/badge/platform-Windows-9E8F7E?style=flat-square" alt="Windows"></a>
+    <img src="https://img.shields.io/badge/platform-Windows-9E8F7E?style=flat-square" alt="Windows">
     <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-7A8E8E?style=flat-square" alt="MIT License"></a>
   </p>
 
