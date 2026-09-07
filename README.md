@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="./assets/hero.svg" alt="extra- — a Scoop bucket for additional Windows software" width="960" style="max-width: 100%; height: auto;">
+  <img src="./assets/hero.svg" alt="extra- — supplementary Scoop bucket for Windows software" width="1200" style="max-width: 100%; height: auto;">
 
   <h1>extra-</h1>
-  <p><strong>An independent Scoop bucket for practical Windows software that complements the official ecosystem.</strong></p>
-  <p>Manifest-driven · SHA-256 aware · Scoop-native · PowerShell maintained</p>
+  <p><strong>A focused Scoop bucket for practical Windows software outside the official collections.</strong></p>
+  <p>Manifest-driven · Scoop-native · SHA-256 aware · PowerShell maintained</p>
 
   <p>
     <a href="https://scoop.sh"><img src="https://img.shields.io/badge/Scoop-Bucket-8A9E8B?style=flat-square&logo=scoop" alt="Scoop bucket"></a>
@@ -12,22 +12,22 @@
     <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-7A8E8E?style=flat-square" alt="MIT License"></a>
   </p>
 
-  <p><a href="#quick-start">Quick start</a> · <a href="#what-is-in-the-bucket">Packages</a> · <a href="#maintaining-a-manifest">Maintain</a> · <a href="#security-model">Security</a></p>
+  <p><a href="#quick-start">Quick start</a> · <a href="#manifest-model">Manifest model</a> · <a href="#maintaining-packages">Maintain</a> · <a href="#security-model">Security</a></p>
 </div>
+
+> **Boundary:** this repository stores Scoop manifests and maintenance tooling. It does not redistribute application binaries or claim to be an official Scoop bucket.
 
 ## What it is
 
-**extra-** is a supplementary [Scoop](https://scoop.sh) bucket maintained by [@CYojkoY](https://github.com/CYoJkoY). The repository stores Scoop manifests and maintenance scripts; it does not host application binaries.
+**extra-** is a supplementary [Scoop](https://scoop.sh) bucket maintained by [@CYojkoY](https://github.com/CYoJkoY). It provides installable manifests for additional Windows utilities and specialized applications that fit this repository's use case.
 
-The bucket is intended for additional utilities and specialized Windows applications that are useful to this repository's users without pretending to be part of the official Scoop collections.
+A manifest defines the upstream source, version, installation behavior, and—when supported—the expected SHA-256 digest.
 
-A manifest describes where software comes from, which version to install, how Scoop should expose it, and—when available—the expected SHA-256 hash.
-
-> **Scope:** package availability and update behavior ultimately depend on upstream publishers and the Scoop ecosystem.
+Package availability ultimately depends on the upstream publisher and the Scoop ecosystem.
 
 ## Quick start
 
-Prerequisites: Windows and [Scoop](https://scoop.sh).
+Requirements: Windows and [Scoop](https://scoop.sh).
 
 ```powershell
 scoop bucket add extras https://github.com/CYoJkoY/extras-
@@ -35,21 +35,44 @@ scoop search <package>
 scoop install extras/<package>
 ```
 
-Useful day-to-day commands:
+Common commands:
 
 | Task | Command |
 | :--- | :--- |
-| Update bucket metadata | `scoop update` |
+| Refresh bucket metadata | `scoop update` |
 | Update one package | `scoop update <package>` |
-| Inspect a package | `scoop info extras/<package>` |
-| List installed packages | `scoop list` |
-| Remove a package | `scoop uninstall <package>` |
+| Inspect a manifest | `scoop info extras/<package>` |
+| List installed software | `scoop list` |
+| Remove software | `scoop uninstall <package>` |
 
-The bucket name above is the local Scoop alias `extras`; it does not imply ownership by Scoop's official project.
+`extras` is the local Scoop bucket alias chosen during `bucket add`; it does not denote ownership by Scoop itself.
 
-## What is in the bucket
+## Manifest model
 
-Manifest files live under `bucket/`. Current repository examples include:
+The repository follows Scoop's normal package model rather than checking application payloads into Git.
+
+```text
+bucket/<package>.json
+        │
+        ├── version + download URL
+        ├── expected SHA-256
+        ├── extraction / shim rules
+        └── version discovery metadata
+                │
+                ▼
+              Scoop
+                │
+                ▼
+        upstream software
+```
+
+This keeps the repository small while retaining the information required to reproduce and review an installation definition.
+
+## Current packages
+
+Manifest files live under `bucket/`. The catalog can change independently of this README, so use Scoop for the authoritative package list.
+
+Representative manifests currently include:
 
 - `Context-Menu-Manager-Plus.json`
 - `defender-control-disable.json`
@@ -58,42 +81,13 @@ Manifest files live under `bucket/`. Current repository examples include:
 - `RealWorld-Cursor-Editor.json`
 - `Windhawk-dev.json`
 
-Use `scoop search <package>` for the current catalog rather than relying on this README as a package index.
+Search the live bucket rather than relying on this list for availability.
 
-## Why manifest-based packaging
-
-The repository follows Scoop's normal package model instead of checking application payloads into Git.
-
-```text
-manifest.json
-    │
-    ├── version + download URL
-    ├── expected hash
-    ├── install / shim rules
-    └── version-discovery metadata
-            │
-            ▼
-          Scoop
-            │
-            ▼
-     upstream software
-```
-
-This keeps the repository lightweight while retaining the metadata needed to reproduce and review an installation definition.
-
-## Maintaining a manifest
-
-Create or update a JSON file under `bucket/`.
+## Maintaining packages
 
 ### Add a package
 
-1. Start from an official upstream homepage and download location.
-2. Create `bucket/<package>.json` using the Scoop manifest schema.
-3. Verify the URL, version, and SHA-256 hash.
-4. Test the manifest locally.
-5. Submit the change through GitHub.
-
-Example:
+Start from the official software homepage and download source. Then create `bucket/<package>.json`, verify the version and source, calculate the hash when applicable, and test the manifest locally.
 
 ```powershell
 scoop install ./bucket/example-tool.json
@@ -101,32 +95,32 @@ scoop install ./bucket/example-tool.json
 
 ### Update a package
 
-Refresh the version and download URL, then recalculate the hash and test the new manifest.
+Refresh the version and upstream URL, recalculate the digest, then test the manifest again.
 
 ```powershell
 scoop hash <downloaded-file>
 scoop install ./bucket/<package>.json
 ```
 
-### Common fields
+### Important fields
 
 | Field | Purpose |
 | :--- | :--- |
 | `version` | Current upstream version |
-| `description` | Human-readable package description |
+| `description` | Package description |
 | `homepage` | Official software homepage |
 | `license` | Upstream license identifier |
-| `url` | Download URL or URL collection |
+| `url` | Download URL or URL set |
 | `hash` | Expected SHA-256 digest |
-| `bin` | Executables exposed through Scoop shims |
-| `depends` | Required Scoop dependencies |
-| `extract_dir` | Directory used after extraction |
-| `checkver` | Rules for discovering newer versions |
-| `autoupdate` | Templates for future download URLs |
+| `bin` | Executables exposed as Scoop shims |
+| `depends` | Scoop dependencies |
+| `extract_dir` | Post-extraction directory |
+| `checkver` | Version-discovery rule |
+| `autoupdate` | Future URL/version templates |
 
-## Repository maintenance tooling
+## Maintenance tooling
 
-PowerShell helpers in `bin/` support repeatable bucket maintenance:
+PowerShell helpers in `bin/` make recurring checks repeatable:
 
 ```text
 bin/
@@ -139,19 +133,19 @@ bin/
 └── test.ps1
 ```
 
-They cover tasks such as URL checks, hash checks, version checks, formatting, and local manifest testing.
+They cover URL validation, hash checks, version checks, JSON formatting, missing metadata detection, and local manifest testing.
 
 ## Security model
 
-The repository contains manifests and maintenance scripts rather than application binaries.
+The repository contains manifests and scripts rather than application binaries.
 
-A valid SHA-256 hash verifies that a downloaded file matches the manifest expectation. It does **not** prove that the upstream software is trustworthy or safe.
+A matching SHA-256 digest proves that a downloaded file matches the manifest's expected bytes. It does **not** establish that the upstream software itself is trustworthy or free of vulnerabilities.
 
-Before installing software, review its upstream homepage and download source, especially for applications that request elevated privileges.
+Review the upstream publisher and requested privileges before installing software. Treat manifests and PowerShell maintenance scripts as code: inspect changes before executing them.
 
-When reporting a security or manifest issue, do not publish credentials, tokens, private URLs, or sensitive machine information.
+Do not publish credentials, private URLs, or sensitive machine information in issues or pull requests.
 
-## Project structure
+## Repository structure
 
 ```text
 extras-/
@@ -171,28 +165,22 @@ extras-/
 │   └── test.ps1
 ├── bucket/
 │   ├── app-name.json.template
-│   ├── Context-Menu-Manager-Plus.json
-│   ├── defender-control-disable.json
-│   ├── defender-control-enable.json
-│   ├── project-graph.json
-│   ├── RealWorld-Cursor-Editor.json
-│   ├── Windhawk-dev.json
-│   └── ...
+│   └── *.json
 ├── LICENSE
 └── README.md
 ```
 
 ## Contributing
 
-Issues and pull requests are welcome.
+A useful contribution should add a package that belongs in this bucket, correct an existing manifest, improve reproducible maintenance, or fix tooling.
 
-For a manifest change, include the official software name and homepage, a working download URL, the correct version, a SHA-256 hash when supported, and evidence of a successful local installation test. Add `checkver` and `autoupdate` metadata when practical.
+Package changes should include the official homepage, a working download source, the correct version, a verified SHA-256 hash where supported, and local installation evidence. Add `checkver` and `autoupdate` metadata when practical.
 
-For package suggestions, explain why the software is useful and why a dedicated manifest here is appropriate rather than duplicating an official Scoop bucket.
+Avoid duplicating an official Scoop bucket without a concrete reason.
 
 ## Support
 
-If this bucket saves you time finding or maintaining Windows software, development support is available through the deployed payment page:
+Development support is available through the deployed payment page:
 
 **https://cyojkoy.github.io/Payment/**
 
