@@ -1,0 +1,20 @@
+{
+    "version": "0.1.0",
+    "description": "A collection of practical PowerShell tools for file management and everyday workflows.",
+    "homepage": "https://github.com/CYoJkoY/PowerShell-Tools",
+    "license": "MIT",
+    "url": "https://github.com/CYoJkoY/PowerShell-Tools/releases/download/v0.1.0/PowerShellTools-0.1.0.zip",
+    "hash": "5071c8941c22db9d06e31e4941cb8e69cb230fa7827ec235ecbbb7be175010a9",
+    "psmodule": {
+        "name": "PowerShellTools"
+    },
+    "checkver": {
+        "github": "https://github.com/CYoJkoY/PowerShell-Tools"
+    },
+    "autoupdate": {
+        "url": "https://github.com/CYoJkoY/PowerShell-Tools/releases/download/v$version/PowerShellTools-$version.zip",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}
