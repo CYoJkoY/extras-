@@ -1,0 +1,50 @@
+{
+    "version": "0.1.0-alpha.2",
+    "description": "A Rust-based Chinese Pinyin input method with translation candidates for language learning.",
+    "homepage": "https://qingjian.app",
+    "license": {
+        "identifier": "GPL-3.0",
+        "url": "https://github.com/qingjian-team/qingjian/blob/main/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/qingjian-team/qingjian/releases/download/windows-v0.1.0-alpha.2/Qingjian-0.1.0-alpha.2-Setup.exe",
+            "hash": "4fa3dee9591e75cc4013225f1d9a3a5f873acfb6a0a3db0ad39197eb7b57ee66"
+        }
+    },
+    "installer": {
+        "args": [
+            "/DIR=\"$dir\"",
+            "/VERYSILENT",
+            "/SUPPRESSMSGBOXES",
+            "/NORESTART",
+            "/SP-"
+        ]
+    },
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": [
+            "/VERYSILENT",
+            "/SUPPRESSMSGBOXES",
+            "/NORESTART"
+        ]
+    },
+    "notes": [
+        "The installer requires administrator privileges to register the Windows input method.",
+        "Qingjian stores user data outside the Scoop app directory."
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/qingjian-team/qingjian/releases",
+        "regex": "\"tag_name\"\\s*:\\s*\"(?<tag>windows-v(?<version>\\d+(?:\\.\\d+){2,}(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?))\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/qingjian-team/qingjian/releases/download/$matchTag/Qingjian-$version-Setup.exe",
+                "hash": {
+                    "url": "https://github.com/qingjian-team/qingjian/releases/download/$matchTag/SHA256SUMS"
+                }
+            }
+        }
+    }
+}
