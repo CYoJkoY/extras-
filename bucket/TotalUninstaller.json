@@ -5,7 +5,7 @@
     "license": "Proprietary",
     "architecture": {
         "64bit": {
-            "url": "https://api.xrgzs.top/sdlp/lanzou/?url=https://www.lanzoui.com/iFph73egxhsh&type=down#/dl.7z",
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/TotalUninstaller/TotalUninstall-Pro-v7.6.2.367-x64-Portable.7z",
             "hash": "d33421ba70b265a7b940308eb8dff4b874d7daee8cb861bad3233eeecf754097"
         }
     },
@@ -23,17 +23,13 @@
         "Stop-App"
     ],
     "checkver": {
-        "script": [
-            ". \"$pwd\\bin\\utils.ps1\"",
-            "$f = Get-LanzouList \"https://423down.lanzouo.com/b0f19v03a\" | Where-Object { $_.name_all -like \"TotalUninstall-Pro-v*-x64-Portable.7z\" } | Select-Object -First 1",
-            "$f.name_all + '=====' + $f.id"
-        ],
-        "regex": "TotalUninstall-Pro-v(.*)-x64-Portable.7z=====(?<sharekey>.*)"
+        "url": "https://api.github.com/repos/CYoJkoY/extras-/releases/tags/TotalUninstaller",
+        "regex": "TotalUninstall-Pro-v([\\d.]+)-x64-Portable\\.7z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://api.xrgzs.top/sdlp/lanzou/?url=https://www.lanzoui.com/$matchSharekey&type=down#/dl.7z"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/TotalUninstaller/TotalUninstall-Pro-v$version-x64-Portable.7z"
             }
         }
     }
