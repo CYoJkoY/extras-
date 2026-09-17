@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A lightweight Windows utility that turns CapsLock into a second control layer for text navigation, clipboard workflows, window management, and more.",
     "homepage": "https://github.com/CYoJkoY/CapsLock-",
     "license": {
@@ -8,12 +8,12 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/CYoJkoY/CapsLock-/releases/download/v1.0.0/CapsLock-.exe",
-            "hash": "b1d593f0d51d4838f0195ac46387ac0348d9db0efe1c300c8431634b473cb705"
+            "url": "https://github.com/CYoJkoY/CapsLock-/releases/download/v1.0.1/CapsLock-.exe",
+            "hash": "79a5a98fd62da29dbffcf7e93dbd8534eb9c7f166d613ac1673308a811a526ba"
         },
         "32bit": {
-            "url": "https://github.com/CYoJkoY/CapsLock-/releases/download/v1.0.0/CapsLock-_x86.exe#/CapsLock-.exe",
-            "hash": "5e8d700821e60cffc0f035321f03d754c8e89022a25e1ce17668fe8697990213"
+            "url": "https://github.com/CYoJkoY/CapsLock-/releases/download/v1.0.1/CapsLock-_x86.exe#/CapsLock-.exe",
+            "hash": "0ddceaafaa2193983c0ecee167c823430e5fd047b59ecee994e6a594ffc8269f"
         }
     },
     "bin": "CapsLock-.exe",
