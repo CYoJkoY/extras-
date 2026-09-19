@@ -17,10 +17,10 @@
             "$response = Invoke-WebRequest -Uri $url -UseBasicParsing",
             "Write-Output $response.Content"
         ],
-        "regex": "pc_link\\s*=\\s*\"https://uu\\.gdl\\.netease\\.com/(?<build>\\d+)/UU-(?<version>[\\d.]+)\\.exe\"",
-        "replace": "${version}.${build}"
+        "regex": "pc_link\\s*=\\s*\"https://.*?\\.gdl\\.netease\\.com/(?<build>\\d+)/UU-(?<ver>[\\d.]+)\\.exe",
+        "replace": "${ver}.${build}"
     },
     "autoupdate": {
-        "url": "https://uu.gdl.netease.com/$matchBuild/UU-$matchVersion.exe#/dl.7z"
+        "url": "https://uu.gdl.netease.com/$matchBuild/UU-$matchVer.exe#/dl.7z"
     }
 }
