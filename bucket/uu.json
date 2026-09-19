@@ -1,0 +1,24 @@
+{
+    "version": "6.18.3",
+    "description": "Game network accelerator from NetEase.",
+    "homepage": "https://uu.163.com/",
+    "license": "Proprietary",
+    "url": "https://uu.gdl.netease.com/5247/UU-6.18.3.exe?key1=12e24801fd22eca4fc3584e2aa5a3a83&key2=6aaf1246#/dl.7z",
+    "shortcuts": [
+        [
+            "uu_launcher.exe",
+            "网易UU加速器"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://adl.netease.com/d/g/uu/c/gw/js'",
+            "$response = Invoke-WebRequest -Uri $url -UseBasicParsing",
+            "Write-Output $response.Content"
+        ],
+        "regex": "pc_link\\s*=\\s*\"https://uu\\.gdl\\.netease\\.com/(?<build>\\d+)/UU-(?<version>[\\d.]+)\\.exe\\?key1=(?<key1>[^&\"]+)&key2=(?<key2>[^\"]+)\""
+    },
+    "autoupdate": {
+        "url": "https://uu.gdl.netease.com/$matchBuild/UU-$version.exe?key1=$matchKey1&key2=$matchKey2#/dl.7z"
+    }
+}
