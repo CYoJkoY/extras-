@@ -1,31 +1,36 @@
-name: OpenSSL Windows Release Mirror
+name: OpenSSL Windows Source Build
 
 on:
   push:
     branches:
       - master
+      - fix/19-openssl-mirror
+    paths:
+      - ".github/workflows/openssl-mirror.yml"
   schedule:
-    - cron: "0 * * * *"
+    - cron: "07 */4 * * *"
   workflow_dispatch:
 
 concurrency:
-  group: openssl-release-mirror
-  cancel-in-progress: false
+  group: openssl-source-build-v2
+  cancel-in-progress: true
 
 permissions:
   contents: write
 
 jobs:
-  mirror:
-    name: Mirror OpenSSL Windows installers
+  resolve:
+    name: Resolve OpenSSL source versions
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.resolve.outputs.matrix }}
+      has_builds: ${{ steps.resolve.outputs.has_builds }}
     steps:
-      - name: Install aria2
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y aria2 jq
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Mirror current OpenSSL streams
+      - name: Resolve versions
+        id: resolve
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -33,141 +38,335 @@ jobs:
         run: |
           set -euo pipefail
 
-          hash_source="https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json"
-          metadata="${RUNNER_TEMP}/win32_openssl_hashes.json"
-          mirror_root="${RUNNER_TEMP}/openssl-mirror"
-          release_tag="OpenSSL"
-          all_notes="$mirror_root/release-notes.md"
-          mkdir -p "$mirror_root"
+          releases="$(gh api "repos/openssl/openssl/releases?per_page=100")"
 
-          curl --fail --location --retry 5 --retry-all-errors --silent --show-error \
-            "$hash_source" -o "$metadata"
+          v4="$(jq -r '
+            .[]
+            | select(.draft == false and .prerelease == false)
+            | .tag_name
+            | select(test("^openssl-4\\.[0-9]+\\.[0-9]+$"))
+            | sub("^openssl-"; "")
+          ' <<<"$releases" | head -n 1)"
 
-          latest_version() {
-            local major="$1"
+          v3="$(jq -r '
+            .[]
+            | select(.draft == false and .prerelease == false)
+            | .tag_name
+            | select(test("^openssl-3\\.[0-9]+\\.[0-9]+$"))
+            | sub("^openssl-"; "")
+          ' <<<"$releases" | head -n 1)"
 
-            jq -r --arg major "$major" '
-              .files
-              | to_entries[]
-              | .key as $name
-              | .value
-              | select(.light == false and .installer == "exe")
-              | select($name | test("^Win(32|64|64ARM)OpenSSL-"))
-              | select(.basever | startswith($major + "."))
-              | (.basever + .subver)
-            ' "$metadata" | sort -V | tail -n 1
+          test -n "$v4"
+          test -n "$v3"
+
+          v1="1.1.1w"
+          t1="OpenSSL_1_1_1w"
+          t4="openssl-$v4"
+          t3="openssl-$v3"
+
+          existing='[]'
+          if release_json="$(gh api "repos/$REPOSITORY/releases/tags/OpenSSL" 2>/dev/null)"; then
+            existing="$(jq -c '[.assets[]?.name]' <<<"$release_json")"
+          fi
+
+          matrix="$(
+            jq -cn \
+              --arg v4 "$v4" \
+              --arg t4 "$t4" \
+              --arg v3 "$v3" \
+              --arg t3 "$t3" \
+              --arg v1 "$v1" \
+              --arg t1 "$t1" \
+              --argjson existing "$existing" '
+              [
+                {stream:"4", version:$v4, tag:$t4, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       configure:"no-makedepend enable-static-vcruntime", asset:("openssl-" + $v4 + "-x64.zip")},
+                {stream:"4", version:$v4, tag:$t4, arch:"x86",   target:"VC-WIN32",     vcenv:"x86",          configure:"no-makedepend enable-static-vcruntime", asset:("openssl-" + $v4 + "-x86.zip")},
+                {stream:"4", version:$v4, tag:$t4, arch:"arm64", target:"VC-WIN64-ARM", vcenv:"amd64_arm64", configure:"no-makedepend enable-static-vcruntime", asset:("openssl-" + $v4 + "-arm64.zip")},
+                {stream:"3", version:$v3, tag:$t3, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       configure:"no-makedepend", asset:("openssl-" + $v3 + "-x64.zip")},
+                {stream:"3", version:$v3, tag:$t3, arch:"x86",   target:"VC-WIN32",     vcenv:"x86",          configure:"no-makedepend", asset:("openssl-" + $v3 + "-x86.zip")},
+                {stream:"3", version:$v3, tag:$t3, arch:"arm64", target:"VC-WIN64-ARM", vcenv:"amd64_arm64", configure:"no-makedepend", asset:("openssl-" + $v3 + "-arm64.zip")},
+                {stream:"1", version:$v1, tag:$t1, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       configure:"no-makedepend", asset:("openssl-" + $v1 + "-x64.zip")},
+                {stream:"1", version:$v1, tag:$t1, arch:"x86",   target:"VC-WIN32",     vcenv:"x86",          configure:"no-makedepend", asset:("openssl-" + $v1 + "-x86.zip")}
+              ]
+              | map(. as $item | select(($existing | index($item.asset)) == null))
+              | {include:.}
+            '
+          )"
+
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          if [[ "$(jq '.include | length' <<<"$matrix")" -gt 0 ]]; then
+            echo "has_builds=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_builds=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: Build ${{ matrix.stream }}.x ${{ matrix.arch }}
+    needs: resolve
+    if: ${{ needs.resolve.outputs.has_builds == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.matrix) }}
+    runs-on: windows-2022
+    steps:
+      - name: Checkout OpenSSL source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: openssl/openssl
+          ref: ${{ matrix.tag }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install build tools
+        shell: powershell
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $nasmBits = if ($env:ARCH -eq "x86") { "32" } else { "64" }
+          $nasmArch = if ($env:ARCH -eq "x86") { "x86" } else { "x64" }
+          $nasmInstaller = "nasm-3.01-installer-$nasmArch.exe"
+          $nasmUrl = "https://www.nasm.us/pub/nasm/releasebuilds/3.01/win$nasmBits/$nasmInstaller"
+          $nasmExpected = if ($env:ARCH -eq "x86") {
+            "2e3041dd2abe36cb7e9938057c3cf090dd2eac42d3280957359f87c4d83b9ed0"
+          } else {
+            "7881e9febc8b6558581041019b7890f109bef0694d93ed82c9589794c7b5a600"
           }
 
-          {
-            echo "# OpenSSL Windows binaries"
-            echo
-            echo "This single GitHub Release contains the current Windows installer assets for the independently maintained OpenSSL 4.x, 3.x, and 1.x streams."
-            echo
-            echo "These files are byte-for-byte mirrors of Windows builds published by Shining Light Productions. They are not official OpenSSL Project Windows binaries."
-            echo
-            echo "- Upstream installer page: https://slproweb.com/products/Win32OpenSSL.html"
-            echo "- Upstream hash metadata: https://github.com/slproweb/opensslhashes"
-            echo "- OpenSSL project: https://github.com/openssl/openssl"
-            echo
-          } > "$all_notes"
+          $nasmPath = Join-Path $env:RUNNER_TEMP $nasmInstaller
+          Invoke-WebRequest -Uri $nasmUrl -OutFile $nasmPath
+          $nasmActual = (Get-FileHash $nasmPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($nasmActual -ne $nasmExpected) {
+            throw "SHA256 mismatch for $nasmInstaller."
+          }
 
-          all_assets=()
+          Start-Process -FilePath $nasmPath -ArgumentList "/S" -Wait -NoNewWindow
+          $nasmBin = "C:\Program Files\NASM"
+          if ($env:ARCH -eq "x86") {
+            $nasmBin = "C:\Program Files (x86)\NASM"
+          }
 
-          for major in 4 3 1; do
-            version="$(latest_version "$major")"
-            test -n "$version"
+          if (-not (Test-Path (Join-Path $nasmBin "nasm.exe"))) {
+            throw "NASM was not installed at $nasmBin."
+          }
 
-            stream_dir="$mirror_root/${major}"
-            mkdir -p "$stream_dir"
+          $jomDir = "C:\jom"
+          $jomExe = Join-Path $jomDir "jom.exe"
+          if (Test-Path $jomDir) {
+            Remove-Item $jomDir -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $jomDir | Out-Null
 
-            mapfile -t records < <(
-              jq -r --arg version "$version" '
-                .files
-                | to_entries[]
-                | .key as $name
-                | .value
-                | select(.light == false and .installer == "exe")
-                | select($name | test("^Win(32|64|64ARM)OpenSSL-"))
-                | select((.basever + .subver) == $version)
-                | [$name, .url, .sha256]
-                | @tsv
-              ' "$metadata"
-            )
+          Invoke-WebRequest -Uri "https://openssl-library.org/ci-deps/jom-1.1.7.exe" -OutFile $jomExe
+          $jomExpected = "8435dbf96eb9ee65395d46d04dc3af2ff6b2618aefbc7964eeede9be669e8bd6"
+          $jomActual = (Get-FileHash $jomExe -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($jomActual -ne $jomExpected) {
+            throw "SHA256 mismatch for jom.exe."
+          }
 
-            test "${#records[@]}" -gt 0
+          "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          $nasmBin | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          $jomDir | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          $env:Path = "$nasmBin;$jomDir;C:\Strawberry\perl\bin;$env:Path"
 
-            echo "## OpenSSL ${version} (${major}.x)" >> "$all_notes"
-            echo >> "$all_notes"
-            echo "| Asset | SHA-256 |" >> "$all_notes"
-            echo "| --- | --- |" >> "$all_notes"
+          perl -v
+          nasm -v
+          jom /?
 
-            for record in "${records[@]}"; do
-              IFS=$'\t' read -r name url expected_sha <<< "$record"
-              output="$stream_dir/$name"
+      - name: Prepare build directory
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $buildDir = Join-Path $env:GITHUB_WORKSPACE "_build"
+          $prefix = Join-Path $env:GITHUB_WORKSPACE "stage"
 
-              echo "Downloading $name"
-              aria2c \
-                --allow-overwrite=true \
-                --auto-file-renaming=false \
-                --continue=true \
-                --file-allocation=none \
-                --max-connection-per-server=16 \
-                --min-split-size=4M \
-                --split=16 \
-                --summary-interval=0 \
-                --console-log-level=warn \
-                --dir="$stream_dir" \
-                --out="$name" \
-                "$url"
+          if (Test-Path $buildDir) {
+            Remove-Item $buildDir -Recurse -Force
+          }
 
-              printf '%s  %s\n' "$expected_sha" "$output" | sha256sum -c -
+          if (Test-Path $prefix) {
+            Remove-Item $prefix -Recurse -Force
+          }
 
-              echo "| `${name}` | `${expected_sha}` |" >> "$all_notes"
-              all_assets+=( "$output" )
-            done
+          New-Item -ItemType Directory -Path $buildDir | Out-Null
+          New-Item -ItemType Directory -Path $prefix | Out-Null
 
-            echo >> "$all_notes"
-          done
+      - name: Configure
+        shell: cmd
+        working-directory: _build
+        env:
+          VCENV: ${{ matrix.vcenv }}
+          OPENSSL_TARGET: ${{ matrix.target }}
+          CONFIGURE_FLAGS: ${{ matrix.configure }}
+          PREFIX: ${{ github.workspace }}\stage
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %VCENV%
+          perl ..\Configure "%OPENSSL_TARGET%" %CONFIGURE_FLAGS% /FS --prefix="%PREFIX%" --openssldir=ssl --libdir=lib
+          if errorlevel 1 exit /b %errorlevel%
 
-          if gh release view "$release_tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
-            echo "Updating existing release $release_tag"
+      - name: Build
+        shell: cmd
+        working-directory: _build
+        env:
+          VCENV: ${{ matrix.vcenv }}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %VCENV%
+          jom /j4 /S
+          if errorlevel 1 exit /b %errorlevel%
 
-            mapfile -t old_assets < <(
-              gh release view "$release_tag" --repo "$REPOSITORY" --json assets --jq '.assets[].name'
-            )
+      - name: Install
+        shell: cmd
+        working-directory: _build
+        env:
+          VCENV: ${{ matrix.vcenv }}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %VCENV%
+          jom /j4 /S install_sw
+          if errorlevel 1 exit /b %errorlevel%
+          jom /j4 /S install_ssldirs
+          if errorlevel 1 exit /b %errorlevel%
 
-            for asset in "${old_assets[@]}"; do
-              if [[ "$asset" =~ ^Win(32|64|64ARM)OpenSSL-.*\.exe$ ]]; then
-                gh release delete-asset "$release_tag" "$asset" --repo "$REPOSITORY" --yes
-              fi
-            done
+      - name: Package build
+        shell: powershell
+        env:
+          VERSION: ${{ matrix.version }}
+          ARCH: ${{ matrix.arch }}
+          ASSET: ${{ matrix.asset }}
+          OPENSSL_TARGET: ${{ matrix.target }}
+          CONFIGURE_FLAGS: ${{ matrix.configure }}
+          VCENV: ${{ matrix.vcenv }}
+        run: |
+          $ErrorActionPreference = "Stop"
 
-            gh release edit "$release_tag" \
-              --repo "$REPOSITORY" \
-              --title "OpenSSL Windows binaries" \
-              --notes-file "$all_notes"
+          $prefix = Join-Path $env:GITHUB_WORKSPACE "stage"
+          $zip = Join-Path $env:GITHUB_WORKSPACE $env:ASSET
+          $builtOpenSSL = Join-Path $prefix "bin\openssl.exe"
 
-            gh release upload "$release_tag" \
-              --repo "$REPOSITORY" \
-              --clobber \
-              "${all_assets[@]}"
-          else
-            echo "Creating release $release_tag"
+          if (-not (Test-Path $builtOpenSSL)) {
+            throw "openssl.exe was not produced."
+          }
+
+          if ($env:ARCH -eq "arm64") {
+            $bytes = [System.IO.File]::ReadAllBytes($builtOpenSSL)
+            if ($bytes.Length -lt 0x40) {
+              throw "openssl.exe is too small to be a valid PE image."
+            }
+            $peOffset = [BitConverter]::ToInt32($bytes, 0x3c)
+            if ($peOffset -lt 0 -or ($peOffset + 6) -gt $bytes.Length) {
+              throw "Invalid PE header offset."
+            }
+            $machine = [BitConverter]::ToUInt16($bytes, $peOffset + 4)
+            if ($machine -ne 0xAA64) {
+              throw ("Expected ARM64 PE image (0xAA64), got 0x{0:X4}." -f $machine)
+            }
+            Write-Host "Validated ARM64 PE image."
+          } else {
+            & $builtOpenSSL version -a
+            if ($LASTEXITCODE -ne 0) {
+              throw "Built openssl.exe could not be executed."
+            }
+          }
+
+          Get-ChildItem $prefix -Recurse -Filter *.pdb | Remove-Item -Force
+
+          $sourceCommit = git -C $env:GITHUB_WORKSPACE rev-parse HEAD
+          $buildInfo = @"
+          OpenSSL source build
+          Source: https://github.com/openssl/openssl
+          Version: $env:VERSION
+          Architecture: $env:ARCH
+          Configure target: $env:OPENSSL_TARGET
+          Visual Studio environment: $env:VCENV
+          Configure flags: $env:CONFIGURE_FLAGS --openssldir=ssl --libdir=lib
+          Source commit: $sourceCommit
+          "@
+          Set-Content -Path (Join-Path $prefix "BUILD-INFO.txt") -Value $buildInfo -Encoding UTF8
+
+          $license = @("LICENSE.txt", "LICENSE") | Where-Object { Test-Path (Join-Path $env:GITHUB_WORKSPACE $_) } | Select-Object -First 1
+          if (-not $license) {
+            throw "OpenSSL license file was not found."
+          }
+
+          Copy-Item (Join-Path $env:GITHUB_WORKSPACE $license) (Join-Path $prefix "LICENSE.txt")
+          Compress-Archive -Path (Join-Path $prefix "*") -DestinationPath $zip -CompressionLevel Optimal
+
+          $hash = (Get-FileHash -Path $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$env:ASSET$([char]9)$hash" | Out-File -FilePath (Join-Path $env:GITHUB_WORKSPACE "package.txt") -Encoding ascii
+
+      - name: Upload build package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ github.workspace }}/${{ matrix.asset }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
+
+  release:
+    name: Publish OpenSSL Release
+    needs:
+      - resolve
+      - build
+    if: ${{ github.ref == 'refs/heads/master' && always() && (needs.resolve.outputs.has_builds == 'false' || needs.build.result == 'success') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build packages
+        if: ${{ needs.build.result == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/openssl-packages
+          pattern: openssl-*.zip
+          merge-multiple: true
+
+      - name: Publish source-built assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          PACKAGES: ${{ runner.temp }}/openssl-packages
+        run: |
+          set -euo pipefail
+
+          release_tag="OpenSSL"
+          notes="$RUNNER_TEMP/openssl-notes.md"
+
+          if ! gh release view "$release_tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
+            cat > "$notes" <<'EOF'
+          # OpenSSL Windows source builds
+
+          These archives are built from tagged releases of the official openssl/openssl source repository using Microsoft Visual C++ in GitHub Actions.
+
+          They are source builds maintained by CYoJkoY/extras-; they are not OpenSSL Corporation-signed Windows installers.
+
+          Each archive contains the OpenSSL runtime, headers, libraries, configuration files, and build provenance in BUILD-INFO.txt.
+          EOF
 
             gh release create "$release_tag" \
               --repo "$REPOSITORY" \
-              --target "$GITHUB_SHA" \
-              --title "OpenSSL Windows binaries" \
-              --notes-file "$all_notes" \
-              --latest=false \
-              "${all_assets[@]}"
+              --target "$(gh api "repos/$REPOSITORY/git/ref/heads/master" --jq '.object.sha')" \
+              --title "OpenSSL Windows source builds" \
+              --notes-file "$notes" \
+              --draft \
+              --latest=false
           fi
+
+          if [[ -d "$PACKAGES" ]]; then
+            find "$PACKAGES" -type f -name 'openssl-*.zip' -print0 \
+              | xargs -0 -r gh release upload "$release_tag" --repo "$REPOSITORY"
+          fi
+
+          gh release edit "$release_tag" \
+            --repo "$REPOSITORY" \
+            --title "OpenSSL Windows source builds" \
+            --draft=false \
+            --latest=false
 
           mapfile -t legacy_releases < <(
             gh release list --repo "$REPOSITORY" --limit 100 --json tagName --jq '.[].tagName'
           )
 
-          for legacy_tag in "${legacy_releases[@]}"; do
+          for legacy_tag in "\${legacy_releases[@]}"; do
             if [[ "$legacy_tag" =~ ^openssl(4|3|1)- ]]; then
               echo "Removing legacy release $legacy_tag"
               gh release delete "$legacy_tag" --repo "$REPOSITORY" --yes
