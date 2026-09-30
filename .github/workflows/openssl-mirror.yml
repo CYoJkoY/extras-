@@ -170,6 +170,7 @@ jobs:
           "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
           $nasmBin | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
           $jomDir | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          $env:Path = "$nasmBin;$jomDir;C:\Strawberry\perl\bin;$env:Path"
 
           perl -v
           nasm -v
