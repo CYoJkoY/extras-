@@ -36,6 +36,8 @@ jobs:
           hash_source="https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json"
           metadata="${RUNNER_TEMP}/win32_openssl_hashes.json"
           mirror_root="${RUNNER_TEMP}/openssl-mirror"
+          release_tag="OpenSSL"
+          all_notes="$mirror_root/release-notes.md"
           mkdir -p "$mirror_root"
 
           curl --fail --location --retry 5 --retry-all-errors --silent --show-error \
@@ -43,36 +45,40 @@ jobs:
 
           latest_version() {
             local major="$1"
+
             jq -r --arg major "$major" '
               .files
               | to_entries[]
+              | .key as $name
               | .value
               | select(.light == false and .installer == "exe")
+              | select($name | test("^Win(32|64|64ARM)OpenSSL-"))
               | select(.basever | startswith($major + "."))
               | (.basever + .subver)
             ' "$metadata" | sort -V | tail -n 1
           }
 
-          mirror_stream() {
-            local major="$1"
-            local version
-            local tag
-            local stream_dir
-            local release_notes
-            local assets=()
+          {
+            echo "# OpenSSL Windows binaries"
+            echo
+            echo "This single GitHub Release contains the current Windows installer assets for the independently maintained OpenSSL 4.x, 3.x, and 1.x streams."
+            echo
+            echo "These files are byte-for-byte mirrors of Windows builds published by Shining Light Productions. They are not official OpenSSL Project Windows binaries."
+            echo
+            echo "- Upstream installer page: https://slproweb.com/products/Win32OpenSSL.html"
+            echo "- Upstream hash metadata: https://github.com/slproweb/opensslhashes"
+            echo "- OpenSSL project: https://github.com/openssl/openssl"
+            echo
+          } > "$all_notes"
 
+          all_assets=()
+
+          for major in 4 3 1; do
             version="$(latest_version "$major")"
             test -n "$version"
 
-            tag="openssl${major}-${version}"
-            stream_dir="$mirror_root/${tag}"
-            release_notes="$stream_dir/release-notes.md"
+            stream_dir="$mirror_root/${major}"
             mkdir -p "$stream_dir"
-
-            if gh release view "$tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
-              echo "Release $tag already exists; nothing to publish."
-              return 0
-            fi
 
             mapfile -t records < <(
               jq -r --arg version "$version" '
@@ -81,6 +87,7 @@ jobs:
                 | .key as $name
                 | .value
                 | select(.light == false and .installer == "exe")
+                | select($name | test("^Win(32|64|64ARM)OpenSSL-"))
                 | select((.basever + .subver) == $version)
                 | [$name, .url, .sha256]
                 | @tsv
@@ -89,24 +96,10 @@ jobs:
 
             test "${#records[@]}" -gt 0
 
-            {
-              echo "# OpenSSL ${version} Windows binary mirror"
-              echo
-              echo "This GitHub Release mirrors the Windows installer files published by Shining Light Productions."
-              echo
-              echo "- Stream: ${major}.x"
-              echo "- Version: ${version}"
-              echo "- Upstream installer page: https://slproweb.com/products/Win32OpenSSL.html"
-              echo "- Upstream hash metadata: https://github.com/slproweb/opensslhashes"
-              echo "- OpenSSL project: https://github.com/openssl/openssl"
-              echo
-              echo "These files are not official OpenSSL Project Windows binaries. They are byte-for-byte mirrors of the corresponding Shining Light Productions installers."
-              echo
-              echo "## SHA-256"
-              echo
-              echo "| Asset | SHA-256 |"
-              echo "| --- | --- |"
-            } > "$release_notes"
+            echo "## OpenSSL ${version} (${major}.x)" >> "$all_notes"
+            echo >> "$all_notes"
+            echo "| Asset | SHA-256 |" >> "$all_notes"
+            echo "| --- | --- |" >> "$all_notes"
 
             for record in "${records[@]}"; do
               IFS=$'\t' read -r name url expected_sha <<< "$record"
@@ -129,18 +122,54 @@ jobs:
 
               printf '%s  %s\n' "$expected_sha" "$output" | sha256sum -c -
 
-              echo "| `${name}` | `${expected_sha}` |" >> "$release_notes"
-              assets+=( "$output" )
+              echo "| `${name}` | `${expected_sha}` |" >> "$all_notes"
+              all_assets+=( "$output" )
             done
 
-            gh release create "$tag" \
+            echo >> "$all_notes"
+          done
+
+          if gh release view "$release_tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
+            echo "Updating existing release $release_tag"
+
+            mapfile -t old_assets < <(
+              gh release view "$release_tag" --repo "$REPOSITORY" --json assets --jq '.assets[].name'
+            )
+
+            for asset in "${old_assets[@]}"; do
+              if [[ "$asset" =~ ^Win(32|64|64ARM)OpenSSL-.*\.exe$ ]]; then
+                gh release delete-asset "$release_tag" "$asset" --repo "$REPOSITORY" --yes
+              fi
+            done
+
+            gh release edit "$release_tag" \
+              --repo "$REPOSITORY" \
+              --title "OpenSSL Windows binaries" \
+              --notes-file "$all_notes"
+
+            gh release upload "$release_tag" \
+              --repo "$REPOSITORY" \
+              --clobber \
+              "${all_assets[@]}"
+          else
+            echo "Creating release $release_tag"
+
+            gh release create "$release_tag" \
               --repo "$REPOSITORY" \
               --target "$GITHUB_SHA" \
-              --title "OpenSSL ${version} Windows binaries" \
-              --notes-file "$release_notes" \
-              "${assets[@]}"
-          }
+              --title "OpenSSL Windows binaries" \
+              --notes-file "$all_notes" \
+              --latest=false \
+              "${all_assets[@]}"
+          fi
 
-          mirror_stream 4
-          mirror_stream 3
-          mirror_stream 1
+          mapfile -t legacy_releases < <(
+            gh release list --repo "$REPOSITORY" --limit 100 --json tagName --jq '.[].tagName'
+          )
+
+          for legacy_tag in "${legacy_releases[@]}"; do
+            if [[ "$legacy_tag" =~ ^openssl(4|3|1)- ]]; then
+              echo "Removing legacy release $legacy_tag"
+              gh release delete "$legacy_tag" --repo "$REPOSITORY" --yes
+            fi
+          done
