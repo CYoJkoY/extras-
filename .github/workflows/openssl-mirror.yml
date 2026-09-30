@@ -1,0 +1,146 @@
+name: OpenSSL Windows Release Mirror
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: openssl-release-mirror
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    name: Mirror OpenSSL Windows installers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install aria2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y aria2 jq
+
+      - name: Mirror current OpenSSL streams
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          hash_source="https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json"
+          metadata="${RUNNER_TEMP}/win32_openssl_hashes.json"
+          mirror_root="${RUNNER_TEMP}/openssl-mirror"
+          mkdir -p "$mirror_root"
+
+          curl --fail --location --retry 5 --retry-all-errors --silent --show-error \
+            "$hash_source" -o "$metadata"
+
+          latest_version() {
+            local major="$1"
+            jq -r --arg major "$major" '
+              .files
+              | to_entries[]
+              | .value
+              | select(.light == false and .installer == "exe")
+              | select(.basever | startswith($major + "."))
+              | (.basever + .subver)
+            ' "$metadata" | sort -V | tail -n 1
+          }
+
+          mirror_stream() {
+            local major="$1"
+            local version
+            local tag
+            local stream_dir
+            local release_notes
+            local assets=()
+
+            version="$(latest_version "$major")"
+            test -n "$version"
+
+            tag="openssl${major}-${version}"
+            stream_dir="$mirror_root/${tag}"
+            release_notes="$stream_dir/release-notes.md"
+            mkdir -p "$stream_dir"
+
+            if gh release view "$tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
+              echo "Release $tag already exists; nothing to publish."
+              return 0
+            fi
+
+            mapfile -t records < <(
+              jq -r --arg version "$version" '
+                .files
+                | to_entries[]
+                | .key as $name
+                | .value
+                | select(.light == false and .installer == "exe")
+                | select((.basever + .subver) == $version)
+                | [$name, .url, .sha256]
+                | @tsv
+              ' "$metadata"
+            )
+
+            test "${#records[@]}" -gt 0
+
+            {
+              echo "# OpenSSL ${version} Windows binary mirror"
+              echo
+              echo "This GitHub Release mirrors the Windows installer files published by Shining Light Productions."
+              echo
+              echo "- Stream: ${major}.x"
+              echo "- Version: ${version}"
+              echo "- Upstream installer page: https://slproweb.com/products/Win32OpenSSL.html"
+              echo "- Upstream hash metadata: https://github.com/slproweb/opensslhashes"
+              echo "- OpenSSL project: https://github.com/openssl/openssl"
+              echo
+              echo "These files are not official OpenSSL Project Windows binaries. They are byte-for-byte mirrors of the corresponding Shining Light Productions installers."
+              echo
+              echo "## SHA-256"
+              echo
+              echo "| Asset | SHA-256 |"
+              echo "| --- | --- |"
+            } > "$release_notes"
+
+            for record in "${records[@]}"; do
+              IFS=$'\t' read -r name url expected_sha <<< "$record"
+              output="$stream_dir/$name"
+
+              echo "Downloading $name"
+              aria2c \
+                --allow-overwrite=true \
+                --auto-file-renaming=false \
+                --continue=true \
+                --file-allocation=none \
+                --max-connection-per-server=16 \
+                --min-split-size=4M \
+                --split=16 \
+                --summary-interval=0 \
+                --console-log-level=warn \
+                --dir="$stream_dir" \
+                --out="$name" \
+                "$url"
+
+              printf '%s  %s\n' "$expected_sha" "$output" | sha256sum -c -
+
+              echo "| `${name}` | `${expected_sha}` |" >> "$release_notes"
+              assets+=( "$output" )
+            done
+
+            gh release create "$tag" \
+              --repo "$REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "OpenSSL ${version} Windows binaries" \
+              --notes-file "$release_notes" \
+              "${assets[@]}"
+          }
+
+          mirror_stream 4
+          mirror_stream 3
+          mirror_stream 1

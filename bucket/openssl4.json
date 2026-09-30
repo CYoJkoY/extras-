@@ -5,15 +5,15 @@
     "license": "Apache-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://slproweb.com/download/Win64OpenSSL-4_0_3.exe",
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl4-4.0.3/Win64OpenSSL-4_0_3.exe",
             "hash": "0f5436092d1303db9052d3c114fbc6326abe0276861619e26da5156ddf7ca087"
         },
         "32bit": {
-            "url": "https://slproweb.com/download/Win32OpenSSL-4_0_3.exe",
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl4-4.0.3/Win32OpenSSL-4_0_3.exe",
             "hash": "545de3fec10090fcb2a43a3d999c5a61d3daa429ea44d0a360099c0de34ae35a"
         },
         "arm64": {
-            "url": "https://slproweb.com/download/Win64ARMOpenSSL-4_0_3.exe",
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl4-4.0.3/Win64ARMOpenSSL-4_0_3.exe",
             "hash": "afc177200938f34948b50e9f771205672dbe7086ea483122274b9ccd7085c9b9"
         }
     },
@@ -43,13 +43,13 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://slproweb.com/download/Win64OpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl4-$version/Win64OpenSSL-$underscoreVersion.exe"
             },
             "32bit": {
-                "url": "https://slproweb.com/download/Win32OpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl4-$version/Win32OpenSSL-$underscoreVersion.exe"
             },
             "arm64": {
-                "url": "https://slproweb.com/download/Win64ARMOpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl4-$version/Win64ARMOpenSSL-$underscoreVersion.exe"
             }
         },
         "hash": {
