@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - fix/19-openssl-mirror
+      - fix/20-openssl-arm64-pdb
     paths:
       - ".github/workflows/openssl-mirror.yml"
   schedule:
@@ -210,6 +211,7 @@ jobs:
         working-directory: _build
         env:
           VCENV: ${{ matrix.vcenv }}
+          CL: /FS
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %VCENV%
           jom /j4 /S
