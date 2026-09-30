@@ -124,8 +124,6 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
 
-          choco install strawberryperl -y --no-progress
-
           $nasmBits = if ($env:ARCH -eq "x86") { "32" } else { "64" }
           $nasmArch = if ($env:ARCH -eq "x86") { "x86" } else { "x64" }
           $nasmInstaller = "nasm-3.01-installer-$nasmArch.exe"
@@ -203,7 +201,7 @@ jobs:
           CONFIGURE_FLAGS: ${{ matrix.configure }}
           PREFIX: ${{ github.workspace }}\stage
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" "%VCENV%"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %VCENV%
           perl ..\Configure --banner=Configured "%OPENSSL_TARGET%" %CONFIGURE_FLAGS% --prefix="%PREFIX%" --openssldir=ssl --libdir=lib
           if errorlevel 1 exit /b %errorlevel%
 
@@ -264,7 +262,7 @@ jobs:
           Architecture: $env:ARCH
           Configure target: $env:OPENSSL_TARGET
           Visual Studio environment: $env:VCENV
-          Configure flags: no-makedepend enable-static-vcruntime --openssldir=ssl --libdir=lib
+          Configure flags: $env:CONFIGURE_FLAGS --openssldir=ssl --libdir=lib
           Source commit: $sourceCommit
           "@
           Set-Content -Path (Join-Path $prefix "BUILD-INFO.txt") -Value $buildInfo -Encoding UTF8
