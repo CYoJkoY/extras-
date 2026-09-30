@@ -199,11 +199,10 @@ jobs:
           VCENV: ${{ matrix.vcenv }}
           OPENSSL_TARGET: ${{ matrix.target }}
           CONFIGURE_FLAGS: ${{ matrix.configure }}
-          CFLAGS: /FS
           PREFIX: ${{ github.workspace }}\stage
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %VCENV%
-          perl ..\Configure "%OPENSSL_TARGET%" %CONFIGURE_FLAGS% --prefix="%PREFIX%" --openssldir=ssl --libdir=lib
+          perl ..\Configure "%OPENSSL_TARGET%" %CONFIGURE_FLAGS% /FS --prefix="%PREFIX%" --openssldir=ssl --libdir=lib
           if errorlevel 1 exit /b %errorlevel%
 
       - name: Build
