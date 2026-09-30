@@ -308,7 +308,7 @@ jobs:
     needs:
       - resolve
       - build
-    if: ${{ always() && (needs.resolve.outputs.has_builds == 'false' || needs.build.result == 'success') }}
+    if: ${{ github.ref == 'refs/heads/master' && always() && (needs.resolve.outputs.has_builds == 'false' || needs.build.result == 'success') }}
     runs-on: ubuntu-latest
     steps:
       - name: Download build packages
