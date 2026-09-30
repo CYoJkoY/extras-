@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: openssl-source-build
+  group: openssl-source-build-v2
   cancel-in-progress: true
 
 permissions:
