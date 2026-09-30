@@ -7,39 +7,38 @@
         "url": "https://www.openssl.org/source/license-openssl-ssleay.txt"
     },
     "architecture": {
-        "32bit": {
-            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win32OpenSSL-1_1_1w.exe",
-            "hash": "7d2098dce53032009790b596e396bb53c1894a1b4339a67befebf1848cb2ff33"
-        },
         "64bit": {
-            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win64OpenSSL-1_1_1w.exe",
-            "hash": "3fdcae7c00fd6bf20c7da32b6d22988cbf74eff1273e6dce22bd61a076381781"
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-1.1.1w-x64.zip",
+            "hash": "e9693165367619bd2e48e6c078f07a11d8fb5ed9446ae413a98c06dd6bf7645d"
+        },
+        "32bit": {
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-1.1.1w-x86.zip",
+            "hash": "e8bd306f53bc61cb6af924df47ab18c51862444ab18b025ff03cf5902e472e5e"
         }
     },
-    "innosetup": true,
     "bin": "bin\\openssl.exe",
+    "env_add_path": "bin",
     "env_set": {
-        "OPENSSL_CONF": "$dir\\bin\\openssl.cfg"
+        "OPENSSL_ROOT_DIR": "$dir",
+        "OPENSSL_LIB_DIR": "$dir\\lib",
+        "OPENSSL_INCLUDE_DIR": "$dir\\include",
+        "OPENSSL_CONF": "$dir\\ssl\\openssl.cnf"
     },
     "checkver": {
-        "url": "https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json",
-        "regex": "\"Win32OpenSSL-(1)_(\\d+)_(\\d+)([a-z]+)\\.exe\"",
-        "replace": "$1.$2.$3$4",
-        "reverse": true
+        "url": "https://api.github.com/repos/openssl/openssl/releases?per_page=100",
+        "regex": "\"tag_name\":\\s*\"OpenSSL_1_1_1w\""
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win64OpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-$version-x64.zip"
             },
             "32bit": {
-                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win32OpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-$version-x86.zip"
             }
         },
         "hash": {
-            "mode": "json",
-            "jsonpath": "$.files.['$basename'].sha256",
-            "url": "https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json"
+            "mode": "download"
         }
     }
 }

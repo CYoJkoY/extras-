@@ -5,56 +5,45 @@
     "license": "Apache-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win64OpenSSL-4_0_3.exe",
-            "hash": "0f5436092d1303db9052d3c114fbc6326abe0276861619e26da5156ddf7ca087"
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.0.3-x64.zip",
+            "hash": "5ce17b70c33611c97fdcc2e02dafb09d60e0d518caa9b004d836dabe1683feea"
         },
         "32bit": {
-            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win32OpenSSL-4_0_3.exe",
-            "hash": "545de3fec10090fcb2a43a3d999c5a61d3daa429ea44d0a360099c0de34ae35a"
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.0.3-x86.zip",
+            "hash": "567f3ef63121ba483a904e3a2509379a6053786d86b332628300e28e46c56b0c"
         },
         "arm64": {
-            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win64ARMOpenSSL-4_0_3.exe",
-            "hash": "afc177200938f34948b50e9f771205672dbe7086ea483122274b9ccd7085c9b9"
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.0.3-arm64.zip",
+            "hash": "71408ec78501867c8b9313fed32852aeed025829470ae75fd56ec7bf66980730"
         }
     },
-    "pre_install": [
-        "$arch = switch ($architecture) {",
-        "    '64bit' { 'x64'; break }",
-        "    '32bit' { 'x86'; break }",
-        "    'arm64' { $architecture; break }",
-        "}",
-        "$null = Get-ChildItem \"$dir/lib/VC/$arch/MT\" | ForEach-Object { New-Item -ItemType HardLink -Target $_.FullName -Path \"$dir/lib/$($_.Name)\" }"
-    ],
-    "innosetup": true,
     "bin": "bin\\openssl.exe",
     "env_add_path": "bin",
     "env_set": {
         "OPENSSL_ROOT_DIR": "$dir",
         "OPENSSL_LIB_DIR": "$dir\\lib",
         "OPENSSL_INCLUDE_DIR": "$dir\\include",
-        "OPENSSL_MODULES": "$dir\\bin",
-        "OPENSSL_CONF": "$dir\\bin\\cnf\\openssl.cnf"
+        "OPENSSL_MODULES": "$dir\\lib\\ossl-modules",
+        "OPENSSL_CONF": "$dir\\ssl\\openssl.cnf"
     },
     "checkver": {
-        "url": "https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json",
-        "regex": "\"basever\":\\s*\"(4\\.[\\d.]+)\"",
-        "reverse": true
+        "url": "https://api.github.com/repos/openssl/openssl/releases?per_page=100",
+        "regex": "\"tag_name\":\\s*\"openssl-(4\\.[\\d.]+)\""
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win64OpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-$version-x64.zip"
             },
             "32bit": {
-                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win32OpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-$version-x86.zip"
             },
             "arm64": {
-                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/Win64ARMOpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-$version-arm64.zip"
             }
         },
         "hash": {
-            "url": "https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json",
-            "jsonpath": "$.files.['$basename'].sha256"
+            "mode": "download"
         }
     }
 }
