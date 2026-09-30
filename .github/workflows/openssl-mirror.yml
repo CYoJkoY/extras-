@@ -121,63 +121,100 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
+
           choco install strawberryperl nasm -y --no-progress
-          $env:Path = "C:\Strawberry\perl\bin;C:\Program Files\NASM;$env:Path"
+
+          $jomZip = Join-Path $env:RUNNER_TEMP "jom_1_1_7.zip"
+          $jomDir = Join-Path $env:RUNNER_TEMP "jom"
+          Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom_1_1_7.zip" -OutFile $jomZip
+
+          if (Test-Path $jomDir) {
+            Remove-Item $jomDir -Recurse -Force
+          }
+
+          Expand-Archive -Path $jomZip -DestinationPath $jomDir -Force
+
+          "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          "C:\Program Files\NASM" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+          $jomExe = Get-ChildItem $jomDir -Filter jom.exe -Recurse | Select-Object -First 1
+          if (-not $jomExe) {
+            throw "jom.exe was not found after extraction."
+          }
+
+          $jomExe.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
           perl -v
           nasm -v
+          jom /?
 
-      - name: Configure, build and package
+      - name: Prepare build directory
         shell: powershell
-        env:
-          OPENSSL_TARGET: ${{ matrix.target }}
-          VCENV: ${{ matrix.vcenv }}
-          VERSION: ${{ matrix.version }}
-          ARCH: ${{ matrix.arch }}
-          ASSET: ${{ matrix.asset }}
         run: |
           $ErrorActionPreference = "Stop"
-          $env:Path = "C:\Strawberry\perl\bin;C:\Program Files\NASM;$env:Path"
-
-          $vswhere = Join-Path ([Environment]::GetEnvironmentVariable("ProgramFiles(x86)")) "Microsoft Visual Studio\Installer\vswhere.exe"
-          if (-not (Test-Path $vswhere)) {
-            $vswhere = Join-Path $env:ProgramFiles "Microsoft Visual Studio\Installer\vswhere.exe"
-          }
-          if (-not (Test-Path $vswhere)) {
-            throw "vswhere.exe was not found."
-          }
-
-          $vsroot = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-          if ([string]::IsNullOrWhiteSpace($vsroot)) {
-            throw "Visual Studio C++ toolset was not found."
-          }
-
-          $vcvarsall = Join-Path $vsroot "VC\Auxiliary\Build\vcvarsall.bat"
-          if (-not (Test-Path $vcvarsall)) {
-            throw "vcvarsall.bat was not found: $vcvarsall"
-          }
-
+          $buildDir = Join-Path $env:GITHUB_WORKSPACE "_build"
           $prefix = Join-Path $env:GITHUB_WORKSPACE "stage"
-          $zip = Join-Path $env:GITHUB_WORKSPACE $env:ASSET
+
+          if (Test-Path $buildDir) {
+            Remove-Item $buildDir -Recurse -Force
+          }
 
           if (Test-Path $prefix) {
             Remove-Item $prefix -Recurse -Force
           }
+
+          New-Item -ItemType Directory -Path $buildDir | Out-Null
           New-Item -ItemType Directory -Path $prefix | Out-Null
 
-          $commands = @(
-            ('call "' + $vcvarsall + '" ' + $env:VCENV),
-            ('perl Configure ' + $env:OPENSSL_TARGET + ' no-makedepend enable-static-vcruntime --prefix="' + $prefix + '" --openssldir=ssl --libdir=lib'),
-            'nmake /NOLOGO',
-            'nmake /NOLOGO install_sw',
-            'nmake /NOLOGO install_ssldirs'
-          )
+      - name: Configure
+        shell: cmd
+        working-directory: _build
+        env:
+          VCENV: ${{ matrix.vcenv }}
+          OPENSSL_TARGET: ${{ matrix.target }}
+          PREFIX: ${{ github.workspace }}\stage
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" "%VCENV%"
+          perl ..\Configure --banner=Configured "%OPENSSL_TARGET%" no-makedepend enable-static-vcruntime --prefix="%PREFIX%" --openssldir=ssl --libdir=lib
+          if errorlevel 1 exit /b %errorlevel%
 
-          cmd.exe /d /s /c ($commands -join " && ")
-          if ($LASTEXITCODE -ne 0) {
-            throw "OpenSSL build failed with exit code $LASTEXITCODE."
-          }
+      - name: Build
+        shell: cmd
+        working-directory: _build
+        env:
+          VCENV: ${{ matrix.vcenv }}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" "%VCENV%"
+          jom /j4 /S
+          if errorlevel 1 exit /b %errorlevel%
 
+      - name: Install
+        shell: cmd
+        working-directory: _build
+        env:
+          VCENV: ${{ matrix.vcenv }}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" "%VCENV%"
+          jom /j4 /S install_sw
+          if errorlevel 1 exit /b %errorlevel%
+          jom /j4 /S install_ssldirs
+          if errorlevel 1 exit /b %errorlevel%
+
+      - name: Package build
+        shell: powershell
+        env:
+          VERSION: ${{ matrix.version }}
+          ARCH: ${{ matrix.arch }}
+          ASSET: ${{ matrix.asset }}
+          OPENSSL_TARGET: ${{ matrix.target }}
+          VCENV: ${{ matrix.vcenv }}
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $prefix = Join-Path $env:GITHUB_WORKSPACE "stage"
+          $zip = Join-Path $env:GITHUB_WORKSPACE $env:ASSET
           $builtOpenSSL = Join-Path $prefix "bin\openssl.exe"
+
           if (-not (Test-Path $builtOpenSSL)) {
             throw "openssl.exe was not produced."
           }
@@ -189,11 +226,10 @@ jobs:
 
           Get-ChildItem $prefix -Recurse -Filter *.pdb | Remove-Item -Force
 
-          $sourceCommit = git rev-parse HEAD
+          $sourceCommit = git -C $env:GITHUB_WORKSPACE rev-parse HEAD
           $buildInfo = @"
           OpenSSL source build
           Source: https://github.com/openssl/openssl
-          Tag: $env:OPENSSL_TARGET
           Version: $env:VERSION
           Architecture: $env:ARCH
           Configure target: $env:OPENSSL_TARGET
@@ -202,12 +238,13 @@ jobs:
           Source commit: $sourceCommit
           "@
           Set-Content -Path (Join-Path $prefix "BUILD-INFO.txt") -Value $buildInfo -Encoding UTF8
-          $license = @("LICENSE.txt", "LICENSE") | Where-Object { Test-Path $_ } | Select-Object -First 1
+
+          $license = @("LICENSE.txt", "LICENSE") | Where-Object { Test-Path (Join-Path $env:GITHUB_WORKSPACE $_) } | Select-Object -First 1
           if (-not $license) {
             throw "OpenSSL license file was not found."
           }
-          Copy-Item $license (Join-Path $prefix "LICENSE.txt")
 
+          Copy-Item (Join-Path $env:GITHUB_WORKSPACE $license) (Join-Path $prefix "LICENSE.txt")
           Compress-Archive -Path (Join-Path $prefix "*") -DestinationPath $zip -CompressionLevel Optimal
 
           $hash = (Get-FileHash -Path $zip -Algorithm SHA256).Hash.ToLowerInvariant()
