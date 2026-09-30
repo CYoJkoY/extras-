@@ -248,9 +248,25 @@ jobs:
             throw "openssl.exe was not produced."
           }
 
-          & $builtOpenSSL version -a
-          if ($LASTEXITCODE -ne 0) {
-            throw "Built openssl.exe could not be executed."
+          if ($env:ARCH -eq "arm64") {
+            $bytes = [System.IO.File]::ReadAllBytes($builtOpenSSL)
+            if ($bytes.Length -lt 0x40) {
+              throw "openssl.exe is too small to be a valid PE image."
+            }
+            $peOffset = [BitConverter]::ToInt32($bytes, 0x3c)
+            if ($peOffset -lt 0 -or ($peOffset + 6) -gt $bytes.Length) {
+              throw "Invalid PE header offset."
+            }
+            $machine = [BitConverter]::ToUInt16($bytes, $peOffset + 4)
+            if ($machine -ne 0xAA64) {
+              throw ("Expected ARM64 PE image (0xAA64), got 0x{0:X4}." -f $machine)
+            }
+            Write-Host "Validated ARM64 PE image."
+          } else {
+            & $builtOpenSSL version -a
+            if ($LASTEXITCODE -ne 0) {
+              throw "Built openssl.exe could not be executed."
+            }
           }
 
           Get-ChildItem $prefix -Recurse -Filter *.pdb | Remove-Item -Force
