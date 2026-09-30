@@ -119,12 +119,41 @@ jobs:
 
       - name: Install build tools
         shell: powershell
+        env:
+          ARCH: ${{ matrix.arch }}
         run: |
           $ErrorActionPreference = "Stop"
 
-          choco install strawberryperl nasm -y --no-progress
+          choco install strawberryperl -y --no-progress
 
-          $jomDir = Join-Path $env:RUNNER_TEMP "jom"
+          $nasmBits = if ($env:ARCH -eq "x86") { "32" } else { "64" }
+          $nasmArch = if ($env:ARCH -eq "x86") { "x86" } else { "x64" }
+          $nasmInstaller = "nasm-3.01-installer-$nasmArch.exe"
+          $nasmUrl = "https://www.nasm.us/pub/nasm/releasebuilds/3.01/win$nasmBits/$nasmInstaller"
+          $nasmExpected = if ($env:ARCH -eq "x86") {
+            "2e3041dd2abe36cb7e9938057c3cf090dd2eac42d3280957359f87c4d83b9ed0"
+          } else {
+            "7881e9febc8b6558581041019b7890f109bef0694d93ed82c9589794c7b5a600"
+          }
+
+          $nasmPath = Join-Path $env:RUNNER_TEMP $nasmInstaller
+          Invoke-WebRequest -Uri $nasmUrl -OutFile $nasmPath
+          $nasmActual = (Get-FileHash $nasmPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($nasmActual -ne $nasmExpected) {
+            throw "SHA256 mismatch for $nasmInstaller."
+          }
+
+          Start-Process -FilePath $nasmPath -ArgumentList "/S" -Wait -NoNewWindow
+          $nasmBin = "C:\Program Files\NASM"
+          if ($env:ARCH -eq "x86") {
+            $nasmBin = "C:\Program Files (x86)\NASM"
+          }
+
+          if (-not (Test-Path (Join-Path $nasmBin "nasm.exe"))) {
+            throw "NASM was not installed at $nasmBin."
+          }
+
+          $jomDir = "C:\jom"
           $jomExe = Join-Path $jomDir "jom.exe"
           if (Test-Path $jomDir) {
             Remove-Item $jomDir -Recurse -Force
@@ -132,22 +161,14 @@ jobs:
           New-Item -ItemType Directory -Path $jomDir | Out-Null
 
           Invoke-WebRequest -Uri "https://openssl-library.org/ci-deps/jom-1.1.7.exe" -OutFile $jomExe
-          $ciDepsPath = Join-Path $env:GITHUB_WORKSPACE ".github\ci-deps.json"
-          if (-not (Test-Path $ciDepsPath)) {
-            throw "OpenSSL ci-deps.json was not found in the checked-out source tree."
-          }
-          $jomExpected = (Get-Content $ciDepsPath -Raw | ConvertFrom-Json).'jom-1.1.7.exe'
+          $jomExpected = "8435dbf96eb9ee65395d46d04dc3af2ff6b2618aefbc7964eeede9be669e8bd6"
           $jomActual = (Get-FileHash $jomExe -Algorithm SHA256).Hash.ToLowerInvariant()
-          if ($jomActual -ne $jomExpected.ToLowerInvariant()) {
-            throw "SHA256 mismatch for jom.exe (expected $jomExpected, got $jomActual)."
+          if ($jomActual -ne $jomExpected) {
+            throw "SHA256 mismatch for jom.exe."
           }
 
           "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
-          "C:\Program Files\NASM" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
-          if ($env:ARCH -eq "x86") {
-            "C:\Program Files (x86)\NASM" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
-          }
-
+          $nasmBin | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
           $jomDir | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
 
           perl -v
