@@ -25,8 +25,8 @@ jobs:
       - name: Mirror current OpenSSL streams
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
-          REPOSITORY: \${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
 
@@ -136,14 +136,14 @@ jobs:
               ' "$metadata"
             )
 
-            test -n "$(printf '%s\n' "\${records[@]}" | head -n 1)"
+            test -n "$(printf '%s\n' "${records[@]}" | head -n 1)"
 
             echo "## OpenSSL $version ($major.x)" >> "$notes_file"
             echo >> "$notes_file"
             echo "| Asset | SHA-256 |" >> "$notes_file"
             echo "| --- | --- |" >> "$notes_file"
 
-            for record in "\${records[@]}"; do
+            for record in "${records[@]}"; do
               IFS=$'\t' read -r name url expected_sha <<< "$record"
               stream_dir="$mirror_root/$major"
               output="$stream_dir/$name"
@@ -199,7 +199,7 @@ jobs:
             gh release upload "$release_tag" \
               --repo "$REPOSITORY" \
               --clobber \
-              "\${assets_to_upload[@]}"
+              "${assets_to_upload[@]}"
           else
             echo "No missing or changed OpenSSL assets."
           fi
@@ -221,7 +221,7 @@ jobs:
             gh release list --repo "$REPOSITORY" --limit 100 --json tagName --jq '.[].tagName'
           )
 
-          for legacy_tag in "\${legacy_releases[@]}"; do
+          for legacy_tag in "${legacy_releases[@]}"; do
             if [[ "$legacy_tag" =~ ^openssl(4|3|1)- ]]; then
               echo "Removing legacy release $legacy_tag"
               gh release delete "$legacy_tag" --repo "$REPOSITORY" --yes
