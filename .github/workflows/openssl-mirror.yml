@@ -79,14 +79,14 @@ jobs:
               --arg t1 "$t1" \
               --argjson existing "$existing" '
               [
-                {stream:"4", version:$v4, tag:$t4, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       asset:("openssl-" + $v4 + "-x64.zip")},
-                {stream:"4", version:$v4, tag:$t4, arch:"x86",   target:"VC-WIN32",     vcenv:"amd64_x86",   asset:("openssl-" + $v4 + "-x86.zip")},
-                {stream:"4", version:$v4, tag:$t4, arch:"arm64", target:"VC-WIN64-ARM", vcenv:"amd64_arm64", asset:("openssl-" + $v4 + "-arm64.zip")},
-                {stream:"3", version:$v3, tag:$t3, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       asset:("openssl-" + $v3 + "-x64.zip")},
-                {stream:"3", version:$v3, tag:$t3, arch:"x86",   target:"VC-WIN32",     vcenv:"amd64_x86",   asset:("openssl-" + $v3 + "-x86.zip")},
-                {stream:"3", version:$v3, tag:$t3, arch:"arm64", target:"VC-WIN64-ARM", vcenv:"amd64_arm64", asset:("openssl-" + $v3 + "-arm64.zip")},
-                {stream:"1", version:$v1, tag:$t1, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       asset:("openssl-" + $v1 + "-x64.zip")},
-                {stream:"1", version:$v1, tag:$t1, arch:"x86",   target:"VC-WIN32",     vcenv:"amd64_x86",   asset:("openssl-" + $v1 + "-x86.zip")}
+                {stream:"4", version:$v4, tag:$t4, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       configure:"no-makedepend enable-static-vcruntime", asset:("openssl-" + $v4 + "-x64.zip")},
+                {stream:"4", version:$v4, tag:$t4, arch:"x86",   target:"VC-WIN32",     vcenv:"x86",          configure:"no-makedepend enable-static-vcruntime", asset:("openssl-" + $v4 + "-x86.zip")},
+                {stream:"4", version:$v4, tag:$t4, arch:"arm64", target:"VC-WIN64-ARM", vcenv:"amd64_arm64", configure:"no-makedepend enable-static-vcruntime", asset:("openssl-" + $v4 + "-arm64.zip")},
+                {stream:"3", version:$v3, tag:$t3, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       configure:"no-makedepend", asset:("openssl-" + $v3 + "-x64.zip")},
+                {stream:"3", version:$v3, tag:$t3, arch:"x86",   target:"VC-WIN32",     vcenv:"x86",          configure:"no-makedepend", asset:("openssl-" + $v3 + "-x86.zip")},
+                {stream:"3", version:$v3, tag:$t3, arch:"arm64", target:"VC-WIN64-ARM", vcenv:"amd64_arm64", configure:"no-makedepend", asset:("openssl-" + $v3 + "-arm64.zip")},
+                {stream:"1", version:$v1, tag:$t1, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       configure:"no-makedepend", asset:("openssl-" + $v1 + "-x64.zip")},
+                {stream:"1", version:$v1, tag:$t1, arch:"x86",   target:"VC-WIN32",     vcenv:"x86",          configure:"no-makedepend", asset:("openssl-" + $v1 + "-x86.zip")}
               ]
               | map(. as $item | select(($existing | index($item.asset)) == null))
               | {include:.}
@@ -124,25 +124,24 @@ jobs:
 
           choco install strawberryperl nasm -y --no-progress
 
-          $jomZip = Join-Path $env:RUNNER_TEMP "jom_1_1_7.zip"
+          $jomExe = Join-Path $env:RUNNER_TEMP "jom.exe"
+          Invoke-WebRequest -Uri "https://openssl-library.org/ci-deps/jom-1.1.7.exe" -OutFile $jomExe
+          $jomExpected = (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/openssl/openssl/master/.github/ci-deps.json").Content | ConvertFrom-Json | Select-Object -ExpandProperty 'jom-1.1.7.exe'
+          $jomActual = (Get-FileHash $jomExe -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($jomActual -ne $jomExpected) {
+            throw "SHA256 mismatch for jom.exe."
+          }
           $jomDir = Join-Path $env:RUNNER_TEMP "jom"
-          Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom_1_1_7.zip" -OutFile $jomZip
-
           if (Test-Path $jomDir) {
             Remove-Item $jomDir -Recurse -Force
           }
-
-          Expand-Archive -Path $jomZip -DestinationPath $jomDir -Force
+          New-Item -ItemType Directory -Path $jomDir | Out-Null
+          Copy-Item $jomExe (Join-Path $jomDir "jom.exe")
 
           "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
           "C:\Program Files\NASM" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
 
-          $jomExe = Get-ChildItem $jomDir -Filter jom.exe -Recurse | Select-Object -First 1
-          if (-not $jomExe) {
-            throw "jom.exe was not found after extraction."
-          }
-
-          $jomExe.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          $jomDir | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
 
           perl -v
           nasm -v
@@ -207,6 +206,7 @@ jobs:
           ARCH: ${{ matrix.arch }}
           ASSET: ${{ matrix.asset }}
           OPENSSL_TARGET: ${{ matrix.target }}
+          CONFIGURE_FLAGS: ${{ matrix.configure }}
           VCENV: ${{ matrix.vcenv }}
         run: |
           $ErrorActionPreference = "Stop"
