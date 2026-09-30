@@ -1,11 +1,8 @@
 name: OpenSSL Windows Release Mirror
 
 on:
-  push:
-    branches:
-      - master
   schedule:
-    - cron: "0 * * * *"
+    - cron: "37 */4 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -28,17 +25,24 @@ jobs:
       - name: Mirror current OpenSSL streams
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: \${{ github.token }}
+          REPOSITORY: \${{ github.repository }}
         run: |
           set -euo pipefail
 
           hash_source="https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json"
-          metadata="${RUNNER_TEMP}/win32_openssl_hashes.json"
-          mirror_root="${RUNNER_TEMP}/openssl-mirror"
+          metadata="$RUNNER_TEMP/win32_openssl_hashes.json"
+          mirror_root="$RUNNER_TEMP/openssl-mirror"
           release_tag="OpenSSL"
-          all_notes="$mirror_root/release-notes.md"
+          notes_file="$mirror_root/release-notes.md"
+          download_list="$mirror_root/aria2.input"
+          needed_records="$mirror_root/needed.tsv"
+          upload_list="$mirror_root/upload.txt"
+
           mkdir -p "$mirror_root"
+          : > "$download_list"
+          : > "$needed_records"
+          : > "$upload_list"
 
           curl --fail --location --retry 5 --retry-all-errors --silent --show-error \
             "$hash_source" -o "$metadata"
@@ -58,10 +62,51 @@ jobs:
             ' "$metadata" | sort -V | tail -n 1
           }
 
+          release_exists=false
+          release_is_draft=false
+          release_is_immutable=false
+          release_json=""
+
+          if release_json="$(gh api "repos/$REPOSITORY/releases/tags/$release_tag" 2>/dev/null)"; then
+            release_exists=true
+            release_is_draft="$(jq -r '.draft // false' <<<"$release_json")"
+            release_is_immutable="$(jq -r '.immutable // false' <<<"$release_json")"
+
+            if [[ "$release_is_immutable" == "true" ]]; then
+              echo "The OpenSSL release is immutable and cannot be updated." >&2
+              exit 1
+            fi
+          else
+            cat > "$mirror_root/initial-notes.md" <<'EOF'
+          # OpenSSL Windows binaries
+
+          This single GitHub Release contains Windows installer assets for the independently maintained OpenSSL 4.x, 3.x, and 1.x streams.
+
+          The files are byte-for-byte mirrors of Windows builds published by Shining Light Productions. They are not official OpenSSL Project Windows binaries.
+
+          Upstream:
+          - https://slproweb.com/products/Win32OpenSSL.html
+          - https://github.com/slproweb/opensslhashes
+          - https://github.com/openssl/openssl
+          EOF
+
+            gh release create "$release_tag" \
+              --repo "$REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "OpenSSL Windows binaries" \
+              --notes-file "$mirror_root/initial-notes.md" \
+              --draft \
+              --latest=false
+
+            release_exists=true
+            release_is_draft=true
+            release_json='{"assets":[],"draft":true,"immutable":false}'
+          fi
+
           {
             echo "# OpenSSL Windows binaries"
             echo
-            echo "This single GitHub Release contains the current Windows installer assets for the independently maintained OpenSSL 4.x, 3.x, and 1.x streams."
+            echo "This single GitHub Release contains Windows installer assets for the independently maintained OpenSSL 4.x, 3.x, and 1.x streams."
             echo
             echo "These files are byte-for-byte mirrors of Windows builds published by Shining Light Productions. They are not official OpenSSL Project Windows binaries."
             echo
@@ -69,16 +114,13 @@ jobs:
             echo "- Upstream hash metadata: https://github.com/slproweb/opensslhashes"
             echo "- OpenSSL project: https://github.com/openssl/openssl"
             echo
-          } > "$all_notes"
-
-          all_assets=()
+            echo "Existing assets are retained so older bucket revisions remain installable."
+            echo
+          } > "$notes_file"
 
           for major in 4 3 1; do
             version="$(latest_version "$major")"
             test -n "$version"
-
-            stream_dir="$mirror_root/${major}"
-            mkdir -p "$stream_dir"
 
             mapfile -t records < <(
               jq -r --arg version "$version" '
@@ -94,82 +136,96 @@ jobs:
               ' "$metadata"
             )
 
-            test "${#records[@]}" -gt 0
+            test -n "$(printf '%s\n' "\${records[@]}" | head -n 1)"
 
-            echo "## OpenSSL ${version} (${major}.x)" >> "$all_notes"
-            echo >> "$all_notes"
-            echo "| Asset | SHA-256 |" >> "$all_notes"
-            echo "| --- | --- |" >> "$all_notes"
+            echo "## OpenSSL $version ($major.x)" >> "$notes_file"
+            echo >> "$notes_file"
+            echo "| Asset | SHA-256 |" >> "$notes_file"
+            echo "| --- | --- |" >> "$notes_file"
 
-            for record in "${records[@]}"; do
+            for record in "\${records[@]}"; do
               IFS=$'\t' read -r name url expected_sha <<< "$record"
+              stream_dir="$mirror_root/$major"
               output="$stream_dir/$name"
+              mkdir -p "$stream_dir"
 
-              echo "Downloading $name"
-              aria2c \
-                --allow-overwrite=true \
-                --auto-file-renaming=false \
-                --continue=true \
-                --file-allocation=none \
-                --max-connection-per-server=16 \
-                --min-split-size=4M \
-                --split=16 \
-                --summary-interval=0 \
-                --console-log-level=warn \
-                --dir="$stream_dir" \
-                --out="$name" \
-                "$url"
+              echo "| $name | $expected_sha |" >> "$notes_file"
 
-              printf '%s  %s\n' "$expected_sha" "$output" | sha256sum -c -
+              current_digest="$(jq -r --arg name "$name" '
+                .assets[]?
+                | select(.name == $name)
+                | (.digest // "")
+              ' <<<"$release_json" | head -n 1)"
 
-              echo "| `${name}` | `${expected_sha}` |" >> "$all_notes"
-              all_assets+=( "$output" )
+              if [[ "$current_digest" == "sha256:$expected_sha" ]]; then
+                echo "Already mirrored: $name"
+                continue
+              fi
+
+              echo "Needs mirror: $name"
+              printf '%s\t%s\t%s\t%s\n' "$name" "$url" "$expected_sha" "$output" >> "$needed_records"
+              printf '%s\n' "$output" >> "$upload_list"
+              printf '%s\n' "$url" >> "$download_list"
+              printf '  dir=%s\n' "$stream_dir" >> "$download_list"
+              printf '  out=%s\n' "$name" >> "$download_list"
+              printf '\n' >> "$download_list"
             done
 
-            echo >> "$all_notes"
+            echo >> "$notes_file"
           done
 
-          if gh release view "$release_tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
-            echo "Updating existing release $release_tag"
+          if [[ -s "$download_list" ]]; then
+            aria2c \
+              --allow-overwrite=true \
+              --auto-file-renaming=false \
+              --continue=true \
+              --file-allocation=none \
+              --max-concurrent-downloads=4 \
+              --max-connection-per-server=8 \
+              --max-tries=5 \
+              --min-split-size=8M \
+              --retry-wait=2 \
+              --split=8 \
+              --summary-interval=0 \
+              --console-log-level=warn \
+              --input-file="$download_list"
 
-            mapfile -t old_assets < <(
-              gh release view "$release_tag" --repo "$REPOSITORY" --json assets --jq '.assets[].name'
-            )
+            while IFS=$'\t' read -r name url expected_sha output; do
+              test -f "$output"
+              printf '%s  %s\n' "$expected_sha" "$output" | sha256sum -c -
+            done < "$needed_records"
 
-            for asset in "${old_assets[@]}"; do
-              if [[ "$asset" =~ ^Win(32|64|64ARM)OpenSSL-.*\.exe$ ]]; then
-                gh release delete-asset "$release_tag" "$asset" --repo "$REPOSITORY" --yes
-              fi
-            done
-
-            gh release edit "$release_tag" \
-              --repo "$REPOSITORY" \
-              --title "OpenSSL Windows binaries" \
-              --notes-file "$all_notes"
-
+            mapfile -t assets_to_upload < "$upload_list"
             gh release upload "$release_tag" \
               --repo "$REPOSITORY" \
               --clobber \
-              "${all_assets[@]}"
+              "\${assets_to_upload[@]}"
           else
-            echo "Creating release $release_tag"
+            echo "No missing or changed OpenSSL assets."
+          fi
 
-            gh release create "$release_tag" \
+          gh release edit "$release_tag" \
+            --repo "$REPOSITORY" \
+            --title "OpenSSL Windows binaries" \
+            --notes-file "$notes_file" \
+            --latest=false
+
+          if [[ "$release_is_draft" == "true" ]]; then
+            gh release edit "$release_tag" \
               --repo "$REPOSITORY" \
-              --target "$GITHUB_SHA" \
-              --title "OpenSSL Windows binaries" \
-              --notes-file "$all_notes" \
-              --latest=false \
-              "${all_assets[@]}"
+              --draft=false \
+              --latest=false
           fi
 
           mapfile -t legacy_releases < <(
             gh release list --repo "$REPOSITORY" --limit 100 --json tagName --jq '.[].tagName'
           )
 
-          for legacy_tag in "${legacy_releases[@]}"; do
+          for legacy_tag in "\${legacy_releases[@]}"; do
             if [[ "$legacy_tag" =~ ^openssl(4|3|1)- ]]; then
               echo "Removing legacy release $legacy_tag"
               gh release delete "$legacy_tag" --repo "$REPOSITORY" --yes
             fi
           done
+
+          echo "OpenSSL mirror is up to date."
