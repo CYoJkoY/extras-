@@ -88,7 +88,7 @@ jobs:
                 {stream:"1", version:$v1, tag:$t1, arch:"x64",   target:"VC-WIN64A",    vcenv:"amd64",       asset:("openssl-" + $v1 + "-x64.zip")},
                 {stream:"1", version:$v1, tag:$t1, arch:"x86",   target:"VC-WIN32",     vcenv:"amd64_x86",   asset:("openssl-" + $v1 + "-x86.zip")}
               ]
-              | map(select(($existing | index(.asset)) == null))
+              | map(. as $item | select(($existing | index($item.asset)) == null))
               | {include:.}
             '
           )"
@@ -166,15 +166,10 @@ jobs:
 
           $commands = @(
             ('call "' + $vcvarsall + '" ' + $env:VCENV),
-            ('if errorlevel 1 exit /b %errorlevel%'),
             ('perl Configure ' + $env:OPENSSL_TARGET + ' no-makedepend enable-static-vcruntime --prefix="' + $prefix + '" --openssldir=ssl --libdir=lib'),
-            ('if errorlevel 1 exit /b %errorlevel%'),
             'nmake /NOLOGO',
-            'if errorlevel 1 exit /b %errorlevel%',
             'nmake /NOLOGO install_sw',
-            'if errorlevel 1 exit /b %errorlevel%',
-            'nmake /NOLOGO install_ssldirs',
-            'if errorlevel 1 exit /b %errorlevel%'
+            'nmake /NOLOGO install_ssldirs'
           )
 
           cmd.exe /d /s /c ($commands -join " && ")
@@ -207,7 +202,11 @@ jobs:
           Source commit: $sourceCommit
           "@
           Set-Content -Path (Join-Path $prefix "BUILD-INFO.txt") -Value $buildInfo -Encoding UTF8
-          Copy-Item LICENSE.txt (Join-Path $prefix "LICENSE.txt")
+          $license = @("LICENSE.txt", "LICENSE") | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $license) {
+            throw "OpenSSL license file was not found."
+          }
+          Copy-Item $license (Join-Path $prefix "LICENSE.txt")
 
           Compress-Archive -Path (Join-Path $prefix "*") -DestinationPath $zip -CompressionLevel Optimal
 
