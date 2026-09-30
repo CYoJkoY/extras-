@@ -20,38 +20,30 @@
 
 **extra-** (`CYoJkoY/extras-`) is a supplementary [Scoop](https://scoop.sh) bucket maintained by [@CYoJkoY](https://github.com/CYoJkoY). It provides curated manifests for Windows utilities, desktop customization tools, input methods, game/system helpers, and multi-stream OpenSSL development packages that complement Scoop's official buckets.
 
-- **22 active manifests** under [`bucket/`](./bucket) plus [`app-name.json.template`](./bucket/app-name.json.template) for authoring new packages.
+- **Curated Scoop manifests** under [`bucket/`](./bucket), plus [`app-name.json.template`](./bucket/app-name.json.template) for authoring new packages.
 - **Automated OpenSSL Windows source builds** across `4.x`, `3.x`, and `1.1.1w` streams (`x64`, `x86`, `arm64`), compiled in GitHub Actions from official [`openssl/openssl`](https://github.com/openssl/openssl) release tags.
 - **Continuous maintenance** via scheduled `Excavator` version polling, Pester manifest testing (`powershell` and `pwsh`), and automated issue/PR verification workflows.
 
 ## <img src="assets/readme/icons/features.svg" width="20" height="20" alt=""> Packages
 
-All package manifests live under [`bucket/`](./bucket). Because [`Excavator`](./.github/workflows/excavator.yml) refreshes package versions automatically every 4 hours, inspect the manifest JSON or query Scoop directly (`scoop info extras/<package>`) for the latest version string.
+All package manifests live under [`bucket/`](./bucket). The README intentionally does **not** maintain a package catalog: the manifest files are the source of truth, and [`Excavator`](./.github/workflows/excavator.yml) can refresh versions automatically every 4 hours. This avoids a wide, stale table that has to be edited every time the bucket changes.
 
-| Package | Upstream | Arch | Exposure (`bin` / Shortcut / Integration) | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| [`BackupStartMenuLayout`](./bucket/BackupStartMenuLayout.json) | [Sordum](https://www.sordum.org/10997/) | `x64`, `x86` | Shortcut: `Backup Start Menu Layout` | Back up and restore Windows 10/11 Start Menu layouts (`3rd-Sordum` release mirror) |
-| [`base64`](./bucket/base64.json) | [DI Management](https://www.di-mgt.com.au/base64-for-windows.html) | Universal | Shim: `base64.exe` | Windows port of the Linux RFC 4648 `base64` CLI encoder/decoder |
-| [`CapsLock-`](./bucket/CapsLock-.json) | [CYoJkoY/CapsLock-](https://github.com/CYoJkoY/CapsLock-) | `x64`, `x86` | Shim: `CapsLock-.exe` · Shortcut: `CapsLock Extended` · Persist: `configs` | Lightweight utility turning `CapsLock` into a second control layer for text navigation, clipboard workflows, and window management |
-| [`Context-Menu-Manager-Plus`](./bucket/Context-Menu-Manager-Plus.json) | [PLFJY/ContextMenuMgr](https://github.com/PLFJY/ContextMenuMgr) | `x64`, `x86`, `arm64` | Shim: `ContextMenuManagerPlus.exe` · Shortcut: `Context Menu Manager Plus` | Manage Windows right-click context menus and clean up third-party shell extensions |
-| [`dControl`](./bucket/dControl.json) | [Sordum](https://www.sordum.org/9480/) | `x64` | Shortcut: `Defender Control` | Portable utility to disable or re-enable Microsoft Defender (`3rd-Sordum` release mirror) |
-| [`DefaultProgramsEditor`](./bucket/DefaultProgramsEditor.json) | [defaultprogramseditor.com](https://defaultprogramseditor.com/) | Universal | Shim: `Default Programs Editor.exe` · Shortcut: `Default Programs Editor` | Fix file associations, context menu commands, icons, and autoplay settings |
-| [`defender-control-disable`](./bucket/defender-control-disable.json) | [pgkt04/defender-control](https://github.com/pgkt04/defender-control) | `x64` | Shim: `defender-disable` · Shortcut: `Disable Defender` | Temporarily disable Windows Defender |
-| [`defender-control-enable`](./bucket/defender-control-enable.json) | [pgkt04/defender-control](https://github.com/pgkt04/defender-control) | `x64` | Shim: `defender-enable` · Shortcut: `Enable Defender` | Re-enable Windows Defender |
-| [`DigitalClock5`](./bucket/DigitalClock5.json) | [Kolcha/DigitalClock5](https://github.com/Kolcha/DigitalClock5) | `x64` | Shortcut: `Digital Clock 5` · Persist: `settings.ini`, `plugins`, `skins` | Customizable desktop digital clock with a modular skin and plugin engine |
-| [`gdsdecomp`](./bucket/gdsdecomp.json) | [GDRETools/gdsdecomp](https://github.com/GDRETools/gdsdecomp) | Universal | Shim: `gdre_tools.exe` · Shortcut: `gdsdecomp` | Godot Engine reverse engineering, project recovery, and decompilation toolkit |
-| [`LeiGod-Acc`](./bucket/LeiGod-Acc.json) | [leigod.com](https://www.leigod.com/) | `x64` | Shortcut: `雷神加速器` · Junctions: `%APPDATA%\leigod`, `%USERPROFILE%\.leigod` | LeiGod Game Accelerator client with pauseable minute-based billing |
-| [`openssl1`](./bucket/openssl1.json) | [openssl/openssl](https://github.com/openssl/openssl) | `x64`, `x86` | Shim: `openssl.exe` · `PATH`: `bin` · Env: `OPENSSL_*` | OpenSSL `1.1.1w` pinned legacy stream built from source with headers, libraries, and config |
-| [`openssl3`](./bucket/openssl3.json) | [openssl/openssl](https://github.com/openssl/openssl) | `x64`, `x86`, `arm64` | Shim: `openssl.exe` · `PATH`: `bin` · Env: `OPENSSL_*` | OpenSSL `3.x` stream built from source with headers, libraries, `ossl-modules`, and config |
-| [`openssl4`](./bucket/openssl4.json) | [openssl/openssl](https://github.com/openssl/openssl) | `x64`, `x86`, `arm64` | Shim: `openssl.exe` · `PATH`: `bin` · Env: `OPENSSL_*` | OpenSSL `4.x` stream built from source (`enable-static-vcruntime`) with headers, libraries, `ossl-modules`, and config |
-| [`project-graph`](./bucket/project-graph.json) | [LiRenTech/project-graph](https://github.com/LiRenTech/project-graph) | `x64` | Shim: `project-graph.exe` · Shortcut: `Project Graph` | Next-generation node-diagram tool for visual thinking |
-| [`qingjian`](./bucket/qingjian.json) | [qingjian.app](https://qingjian.app) | `x64` | TSF IME (`zh-CN`) · Startup shortcut: `Qingjian Server.lnk` | Rust-based Chinese Pinyin input method (青简输入法) with translation candidates for language learning |
-| [`RealWorld-Cursor-Editor`](./bucket/RealWorld-Cursor-Editor.json) | [rw-designer.com](https://www.rw-designer.com/cursor-maker) | `x64`, `x86` | Shim: `RWCursorEditor.exe` · Shortcut: `RealWorld Cursor Editor` | Create and edit static and animated mouse cursors for Windows |
-| [`svg-preview`](./bucket/svg-preview.json) | [SickSartori/svg-preview](https://github.com/SickSartori/svg-preview) | `x64` | Windows Explorer shell thumbnail extension | Browser-grade SVG thumbnail rendering in Windows Explorer powered by `resvg` |
-| [`TotalUninstaller`](./bucket/TotalUninstaller.json) | [423down.com](https://www.423down.com/6178.html) | `x64` | Shortcut: `Total Uninstall` · Persist: `Data` | Total Uninstall Pro portable software uninstaller and installation monitor (`TotalUninstaller` release mirror) |
-| [`Windhawk-dev`](./bucket/Windhawk-dev.json) | [windhawk.net](https://windhawk.net/) | Universal | Shim: `windhawk` · Shortcut: `Windhawk` · Persist: `AppData` | Customization marketplace for Windows programs (pre-release `alpha` channel in portable mode) |
-| [`WiseProgramUninstaller`](./bucket/WiseProgramUninstaller.json) | [wisecleaner.com](https://www.wisecleaner.com/wise-program-uninstaller.html) | Universal | Shortcut: `Wise Program Uninstaller` · Persist: `config.ini`, `ExConfig.ini` | Lightweight portable utility to uninstall Windows software and clean residual entries |
-| [`Ztools`](./bucket/Ztools.json) | [ZToolsCenter/ZTools](https://github.com/ZToolsCenter/ZTools) | `x64` | Shortcut: `ZTools` | High-performance open-source application launcher and plugin platform (uTools alternative) |
+Explore the current bucket directly:
+
+```powershell
+# List package names from a local clone
+Get-ChildItem .\bucket -Filter *.json |
+  Where-Object Name -ne 'app-name.json.template' |
+  Sort-Object BaseName |
+  Select-Object -ExpandProperty BaseName
+
+# Inspect or install a package through Scoop
+scoop search <package>
+scoop info extras/<package>
+scoop install extras/<package>
+```
+
+Or browse the authoritative manifest directory on GitHub: [`bucket/`](./bucket). Each manifest contains its homepage, version, license, architecture-specific download URLs, hashes, shortcuts/shims, persistence rules, and update metadata.
 
 ### Highlighted package notes
 
@@ -117,45 +109,22 @@ scoop uninstall <package>
 
 ### Repository layout
 
-```text
-extras-/
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug-report.yml
-│   │   ├── config.yml
-│   │   ├── hash-error.yml
-│   │   └── package-request.yml
-│   ├── workflows/
-│   │   ├── ci.yml
-│   │   ├── excavator.yml
-│   │   ├── issue_comment.yml
-│   │   ├── issues.yml
-│   │   └── openssl-mirror.yml
-│   └── pull_request_template.md
-├── assets/
-│   ├── readme/
-│   │   ├── icons/
-│   │   └── support-cta.svg
-│   ├── bar.svg
-│   ├── dots.svg
-│   ├── hero.svg
-│   └── logo-placeholder.svg
-├── bin/
-│   ├── auto-pr.ps1
-│   ├── checkhashes.ps1
-│   ├── checkurls.ps1
-│   ├── checkver.ps1
-│   ├── formatjson.ps1
-│   ├── missing-checkver.ps1
-│   └── test.ps1
-├── bucket/
-│   ├── app-name.json.template
-│   └── *.json (22 package manifests)
-├── deprecated/
-├── scripts/
-├── LICENSE
-├── README.md
-└── Scoop-Bucket.Tests.ps1
+The repository layout is described at a high level instead of as a fully expanded tree, so this section stays accurate as files are added, removed, or renamed. Browse the linked directories for the live structure.
+
+| Path | Purpose |
+| :--- | :--- |
+| [`.github/`](./.github) | GitHub Actions workflows, issue templates, and pull request metadata |
+| [`assets/`](./assets) | README artwork and visual assets |
+| [`bin/`](./bin) | PowerShell helper scripts wrapping Scoop bucket maintenance tasks |
+| [`bucket/`](./bucket) | Scoop manifests and the new-package template |
+| [`deprecated/`](./deprecated) | Retired manifests or compatibility material kept out of the active bucket |
+| [`scripts/`](./scripts) | Project-specific automation scripts |
+| [`Scoop-Bucket.Tests.ps1`](./Scoop-Bucket.Tests.ps1) | Pester validation entry point for manifests and bucket conventions |
+
+For an exact snapshot from a local clone, run:
+
+```powershell
+Get-ChildItem -Force
 ```
 
 ### PowerShell maintenance helpers
