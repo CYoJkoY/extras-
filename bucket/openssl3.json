@@ -1,0 +1,60 @@
+{
+    "version": "3.6.5",
+    "description": "TLS/SSL toolkit (3.x stream)",
+    "homepage": "https://github.com/openssl/openssl",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://slproweb.com/download/Win64OpenSSL-3_6_5.exe",
+            "hash": "8b2fcf66088fa0d13fa5729ef374a182adf72edfffde89089b3b1bf48c3f257f"
+        },
+        "32bit": {
+            "url": "https://slproweb.com/download/Win32OpenSSL-3_6_5.exe",
+            "hash": "dfe8553164382c1d3a5d22e94e78dcb730fc586f33cc2d5eb51b1cf30db44373"
+        },
+        "arm64": {
+            "url": "https://slproweb.com/download/Win64ARMOpenSSL-3_6_5.exe",
+            "hash": "996e3a4cc8656bc7682a13902c479214fa531173ede317e62b04e1baf5301372"
+        }
+    },
+    "pre_install": [
+        "$arch = switch ($architecture) {",
+        "    '64bit' { 'x64'; break }",
+        "    '32bit' { 'x86'; break }",
+        "    'arm64' { $architecture; break }",
+        "}",
+        "$null = Get-ChildItem \"$dir/lib/VC/$arch/MT\" | ForEach-Object { New-Item -ItemType HardLink -Target $_.FullName -Path \"$dir/lib/$($_.Name)\" }"
+    ],
+    "innosetup": true,
+    "bin": "bin\\openssl.exe",
+    "env_add_path": "bin",
+    "env_set": {
+        "OPENSSL_ROOT_DIR": "$dir",
+        "OPENSSL_LIB_DIR": "$dir\\lib",
+        "OPENSSL_INCLUDE_DIR": "$dir\\include",
+        "OPENSSL_MODULES": "$dir\\bin",
+        "OPENSSL_CONF": "$dir\\bin\\cnf\\openssl.cnf"
+    },
+    "checkver": {
+        "url": "https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json",
+        "regex": "\"basever\":\\s*\"(3\\.[\\d.]+)\"",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://slproweb.com/download/Win64OpenSSL-$underscoreVersion.exe"
+            },
+            "32bit": {
+                "url": "https://slproweb.com/download/Win32OpenSSL-$underscoreVersion.exe"
+            },
+            "arm64": {
+                "url": "https://slproweb.com/download/Win64ARMOpenSSL-$underscoreVersion.exe"
+            }
+        },
+        "hash": {
+            "url": "https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json",
+            "jsonpath": "$.files.['$basename'].sha256"
+        }
+    }
+}
