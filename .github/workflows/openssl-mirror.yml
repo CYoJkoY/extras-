@@ -2,7 +2,7 @@ name: OpenSSL Windows Release Mirror
 
 on:
   schedule:
-    - cron: "37 */4 * * *"
+    - cron: "07 */4 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -136,7 +136,7 @@ jobs:
               ' "$metadata"
             )
 
-            test -n "$(printf '%s\n' "${records[@]}" | head -n 1)"
+            test "${#records[@]}" -gt 0
 
             echo "## OpenSSL $version ($major.x)" >> "$notes_file"
             echo >> "$notes_file"
