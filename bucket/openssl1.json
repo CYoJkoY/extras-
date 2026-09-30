@@ -21,7 +21,12 @@
     "env_set": {
         "OPENSSL_CONF": "$dir\\bin\\openssl.cfg"
     },
-    "checkver": "Win32 OpenSSL v(1\\.[\\d.\\w]+)<",
+    "checkver": {
+        "url": "https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json",
+        "regex": "\"Win32OpenSSL-(1)_(\\d+)_(\\d+)([a-z]+)\\.exe\"",
+        "replace": "$1.$2.$3$4",
+        "reverse": true
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
