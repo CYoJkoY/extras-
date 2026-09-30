@@ -211,7 +211,7 @@ jobs:
         env:
           VCENV: ${{ matrix.vcenv }}
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" "%VCENV%"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %VCENV%
           jom /j4 /S
           if errorlevel 1 exit /b %errorlevel%
 
@@ -221,7 +221,7 @@ jobs:
         env:
           VCENV: ${{ matrix.vcenv }}
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" "%VCENV%"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %VCENV%
           jom /j4 /S install_sw
           if errorlevel 1 exit /b %errorlevel%
           jom /j4 /S install_ssldirs
