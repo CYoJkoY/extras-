@@ -8,11 +8,11 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://slproweb.com/download/Win32OpenSSL-1_1_1w.exe",
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl1-1.1.1w/Win32OpenSSL-1_1_1w.exe",
             "hash": "7d2098dce53032009790b596e396bb53c1894a1b4339a67befebf1848cb2ff33"
         },
         "64bit": {
-            "url": "https://slproweb.com/download/Win64OpenSSL-1_1_1w.exe",
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl1-1.1.1w/Win64OpenSSL-1_1_1w.exe",
             "hash": "3fdcae7c00fd6bf20c7da32b6d22988cbf74eff1273e6dce22bd61a076381781"
         }
     },
@@ -30,10 +30,10 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://slproweb.com/download/Win64OpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl1-$version/Win64OpenSSL-$underscoreVersion.exe"
             },
             "32bit": {
-                "url": "https://slproweb.com/download/Win32OpenSSL-$underscoreVersion.exe"
+                "url": "https://github.com/CYoJkoY/extras-/releases/download/openssl1-$version/Win32OpenSSL-$underscoreVersion.exe"
             }
         },
         "hash": {
