@@ -1,5 +1,5 @@
 {
-    "version": "0.31.3",
+    "version": "0.32.0",
     "description": "A desktop anti-detect browser with isolated browser profiles and proxy management.",
     "homepage": "https://donutbrowser.com",
     "license": {
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/zhom/donutbrowser/releases/download/v0.31.3/Donut_0.31.3_x64-portable.zip",
-            "hash": "fc17265994f050d216fef05c1d8fd4262162e609965ca4eed1042ad215cb9f40"
+            "url": "https://github.com/zhom/donutbrowser/releases/download/v0.32.0/Donut_0.32.0_x64-portable.zip",
+            "hash": "8a8a6d02ec66cfaebf66a46827585c2a4646c6b16e2d3bc4a46c8fccff29fbba"
         }
     },
     "extract_dir": "Donut-Portable",
