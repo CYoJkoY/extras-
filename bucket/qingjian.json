@@ -165,17 +165,13 @@
         "Windows login startup keeps the Qingjian server running afterwards."
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/qingjian-team/qingjian/releases",
-        "regex": "tag_name\\s*:\\s*\"(?<version>windows-v(?>[\\d.]+(?:-[\\w.-]+)?))\""
+        "github": "https://api.github.com/repos/qingjian-team/qingjian/releases/latest",
+        "regex": "(?:v|V)?(?<version>[\\d.]+(?:-[\\w.-]+)?)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/qingjian-team/qingjian/releases/download/$matchTag/qingjian-$version-windows-x86_64-setup.exe",
-                "hash": {
-                    "url": "https://github.com/qingjian-team/qingjian/releases/download/$matchTag/SHA256SUMS"
-                }
-            }
-        }
+        "architecture": { "64bit": {
+            "url": "https://github.com/qingjian-team/qingjian/releases/download/v$version/qingjian-$version-windows-x86_64-setup.exe",
+            "hash": { "url": "https://github.com/qingjian-team/qingjian/releases/download/v$version/SHA256SUMS" }
+        }}
     }
 }
