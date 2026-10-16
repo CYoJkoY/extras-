@@ -4,13 +4,10 @@ on:
   push:
     branches:
       - master
-      - fix/19-openssl-mirror
-      - fix/20-openssl-arm64-pdb
-      - fix/22-openssl-1x-nmake
     paths:
       - ".github/workflows/openssl-mirror.yml"
   schedule:
-    - cron: "07 */4 * * *"
+    - cron: "23 4 * * 1"
   workflow_dispatch:
 
 concurrency:
