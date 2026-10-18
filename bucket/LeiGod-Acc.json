@@ -18,17 +18,28 @@
     "extract_to": "installer",
     "pre_install": [
         "Expand-7zipArchive \"$dir\\installer\\.rdata\" \"$dir\"",
-        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
         "Remove-Item \"$dir\\installer\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
-        "New-PersistDirectory \"$env:APPDATA\\leigod\" \"$persist_dir\\APPDATA\" -Migrate",
-        "New-PersistDirectory \"$env:USERPROFILE\\.leigod\" \"$persist_dir\\.leigod\" -Migrate"
+        "function Link-PersistDir($src, $dst) {",
+        "    if (-not (Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }",
+        "    if (Test-Path $src) {",
+        "        $item = Get-Item $src -Force",
+        "        if ($item.Attributes -match 'ReparsePoint') { return }",
+        "        Copy-Item -Path \"$src\\*\" -Destination $dst -Recurse -Force -ErrorAction SilentlyContinue",
+        "        Remove-Item -Path $src -Recurse -Force -ErrorAction SilentlyContinue",
+        "    }",
+        "    New-Item -ItemType Junction -Path $src -Target $dst -Force | Out-Null",
+        "}",
+        "Link-PersistDir \"$env:APPDATA\\leigod\" \"$persist_dir\\APPDATA\"",
+        "Link-PersistDir \"$env:USERPROFILE\\.leigod\" \"$persist_dir\\.leigod\""
     ],
     "pre_uninstall": [
-        "$bucket = $install.bucket",
-        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
-        "Stop-App",
-        "Remove-Junction \"$env:APPDATA\\leigod\"",
-        "Remove-Junction \"$env:USERPROFILE\\.leigod\""
+        "Stop-Process -Name 'leigod' -Force -ErrorAction SilentlyContinue",
+        "@(\"$env:APPDATA\\leigod\", \"$env:USERPROFILE\\.leigod\") | ForEach-Object {",
+        "    if (Test-Path $_) {",
+        "        $item = Get-Item $_ -Force",
+        "        if ($item.Attributes -match 'ReparsePoint') { $item.Delete() }",
+        "    }",
+        "}"
     ],
     "checkver": {
         "url": "https://www.leigod.com/configs.json",
