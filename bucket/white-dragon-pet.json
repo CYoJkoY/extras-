@@ -6,28 +6,22 @@
     "suggest": {
         "dotnet-framework": "extras/dotnet-framework"
     },
+    "extract_dir": "Codex-Girl-v1.3.4",
     "architecture": {
         "64bit": {
             "url": "https://github.com/daguoguoha/white-dragon-pet/releases/download/v1.3.4/Codex-Girl-v1.3.4-Windows.zip",
             "hash": "e4abb529dbd8a7f7d7476944c4f48263592a5cb5ecb1caae06ee4ee00db71f72"
         }
     },
-    "pre_install": [
-        "Get-ChildItem \"$dir\" -Filter '*.exe' | ForEach-Object {",
-        "    if ($_.Name -like 'Codex-Girl*.exe' -and $_.Name -ne 'Codex-Girl.exe') {",
-        "        Copy-Item $_.FullName \"$dir\\Codex-Girl.exe\" -Force",
-        "    }",
-        "}"
-    ],
     "bin": [
         [
-            "Codex-Girl.exe",
+            "Start-Quota.cmd",
             "white-dragon-pet"
         ]
     ],
     "shortcuts": [
         [
-            "Codex-Girl.exe",
+            "Start-Quota.cmd",
             "Codex娘"
         ]
     ],
@@ -35,6 +29,7 @@
         "github": "https://github.com/daguoguoha/white-dragon-pet"
     },
     "autoupdate": {
+        "extract_dir": "Codex-Girl-v$version",
         "architecture": {
             "64bit": {
                 "url": "https://github.com/daguoguoha/white-dragon-pet/releases/download/v$version/Codex-Girl-v$version-Windows.zip"
