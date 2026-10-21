@@ -31,7 +31,8 @@
   ],
   "persist": "User Data",
   "checkver": {
-    "github": "https://github.com/imputnet/helium-windows"
+    "url": "https://github.com/imputnet/helium-windows/releases",
+    "regex": "/releases/tag/(?:v)?([\\d.]+)"
   },
   "autoupdate": {
     "architecture": {
