@@ -10,6 +10,34 @@
     }
   },
   "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Force -Recurse",
+  "post_install": [
+    "# 1. 确保 persist 目录内存在持久化目录",
+    "if (!(Test-Path \"$persist_dir\\.pi\")) {",
+    "    New-Item -ItemType Directory -Path \"$persist_dir\\.pi\" -Force | Out-Null",
+    "}",
+    "# 2. 若 C 盘已有 .pi 且为普通目录，迁移现有扩展/设置到 persist 后再建立 Junction",
+    "$userPi = \"$env:USERPROFILE\\.pi\"",
+    "if (Test-Path $userPi) {",
+    "    $item = Get-Item $userPi -Force",
+    "    if ($item.Attributes -notmatch 'ReparsePoint') {",
+    "        Get-ChildItem -Path $userPi -Force | ForEach-Object {",
+    "            Copy-Item -Path $_.FullName -Destination \"$persist_dir\\.pi\" -Recurse -Force",
+    "        }",
+    "        Remove-Item $userPi -Recurse -Force",
+    "    }",
+    "}",
+    "# 3. 建立系统级透明软联接 (Junction)",
+    "if (!(Test-Path $userPi)) {",
+    "    New-Item -ItemType Junction -Path $userPi -Target \"$persist_dir\\.pi\" | Out-Null",
+    "}"
+  ],
+  "pre_uninstall": [
+    "# 卸载时仅断开链接，不破坏 persist 内的实际插件和历史会话",
+    "$userPi = \"$env:USERPROFILE\\.pi\"",
+    "if ((Test-Path $userPi) -and ((Get-Item $userPi).Attributes -match 'ReparsePoint')) {",
+    "    (Get-Item $userPi).Delete()",
+    "}"
+  ],
   "bin": "pi-agent-desktop.exe",
   "shortcuts": [
     [
@@ -28,5 +56,5 @@
       }
     }
   },
-  "notes": "Bundles its own server runtime and Pi SDK; a separate pi CLI or Node.js installation is not needed."
+  "notes": "Pi Agent extensions, subagents, and sessions in ~/.pi are automatically mapped to Scoop's persist directory."
 }
