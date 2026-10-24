@@ -1,0 +1,104 @@
+{
+    "version": "26.1021.3705.0",
+    "description": "Desktop application for ChatGPT",
+    "homepage": "https://chatgpt.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://openai.com/policies/terms-of-use/"
+    },
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://persistent.oaistatic.com/codex-app-prod/releases/26.1021.3705.0/ChatGPT-x64.msix#/dl.zip",
+            "hash": "0024ecd081b1187c51de45e983dc3e0bfb3b923faea7526ef2233c9ec8e8b7ac"
+        },
+        "arm64": {
+            "url": "https://persistent.oaistatic.com/codex-app-prod/releases/26.1021.3705.0/ChatGPT-arm64.msix#/dl.zip",
+            "hash": "6bf3f753e5faad8c95a385b5bdfcda2f2032f08baae6642de00e1a797d294ec8"
+        }
+    },
+    "extract_dir": "app",
+    "post_install": [
+        "# 1. 解码 MSIX 原始 URL 编码路径",
+        "Get-ChildItem -LiteralPath $dir -Recurse | Sort-Object { $_.FullName.Length } -Descending | ForEach-Object {",
+        "    $decodedName = [uri]::UnescapeDataString($_.Name)",
+        "    if ($decodedName -ne $_.Name) {",
+        "        Rename-Item -LiteralPath $_.FullName -NewName $decodedName",
+        "    }",
+        "}",
+        "# 2. 初始化核心数据重定向至非系统盘 persist 目录",
+        "$appData = \"$env:APPDATA\\ChatGPT\"",
+        "$targetData = \"$persist_dir\\AppData\"",
+        "$cacheBase = \"$env:LOCALAPPDATA\\ChatGPT\\Cache_Storage\"",
+        "if (!(Test-Path $targetData)) { New-Item -ItemType Directory -Force -Path $targetData | Out-Null }",
+        "if (!(Test-Path $cacheBase)) { New-Item -ItemType Directory -Force -Path $cacheBase | Out-Null }",
+        "if (Test-Path $appData) {",
+        "    $item = Get-Item -LiteralPath $appData",
+        "    $isReparse = [bool]($item.Attributes -band [IO.FileAttributes]::ReparsePoint)",
+        "    if (!$isReparse) {",
+        "        Copy-Item -Path \"$appData\\*\" -Destination $targetData -Recurse -Force -Exclude 'Cache*','*Cache*' -ErrorAction SilentlyContinue",
+        "        Remove-Item -LiteralPath $appData -Recurse -Force",
+        "    }",
+        "}",
+        "if (!(Test-Path $appData)) {",
+        "    cmd.exe /c \"mklink /J `\"$appData`\" `\"$targetData`\"\" | Out-Null",
+        "}",
+        "# 3. 将易失性缓存从持久化目录反向链接回 C 盘 %LOCALAPPDATA%",
+        "$cacheTypes = @('Cache', 'Code Cache', 'GPUCache', 'DawnCache')",
+        "foreach ($c in $cacheTypes) {",
+        "    $cTarget = Join-Path $cacheBase $c",
+        "    $cLink = Join-Path $targetData $c",
+        "    if (!(Test-Path $cTarget)) { New-Item -ItemType Directory -Force -Path $cTarget | Out-Null }",
+        "    if (!(Test-Path $cLink)) {",
+        "        cmd.exe /c \"mklink /J `\"$cLink`\" `\"$cTarget`\"\" | Out-Null",
+        "    }",
+        "}"
+    ],
+    "pre_uninstall": [
+        "# 安全解绑 Junction 链接，避免误删目标实际数据",
+        "$appData = \"$env:APPDATA\\ChatGPT\"",
+        "$targetData = \"$persist_dir\\AppData\"",
+        "$cacheTypes = @('Cache', 'Code Cache', 'GPUCache', 'DawnCache')",
+        "foreach ($c in $cacheTypes) {",
+        "    $cLink = Join-Path $targetData $c",
+        "    if (Test-Path $cLink) {",
+        "        $item = Get-Item -LiteralPath $cLink",
+        "        if ([bool]($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {",
+        "            cmd.exe /c \"rmdir `\"$cLink`\"\" | Out-Null",
+        "        }",
+        "    }",
+        "}",
+        "if (Test-Path $appData) {",
+        "    $item = Get-Item -LiteralPath $appData",
+        "    if ([bool]($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {",
+        "        cmd.exe /c \"rmdir `\"$appData`\"\" | Out-Null",
+        "    }",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "ChatGPT.exe",
+            "ChatGPT"
+        ]
+    ],
+    "env_set": {
+        "CODEX_CLI_PATH": "$dir\\resources\\codex.exe",
+        "CODEX_SPARKLE_ENABLED": "false"
+    },
+    "checkver": {
+        "script": "(Invoke-WebRequest 'https://persistent.oaistatic.com/codex-app-prod/ChatGPT-x64.msix' -Method Head -UseBasicParsing).Headers['x-ms-meta-package_version']",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://persistent.oaistatic.com/codex-app-prod/releases/$version/ChatGPT-x64.msix#/dl.zip"
+            },
+            "arm64": {
+                "url": "https://persistent.oaistatic.com/codex-app-prod/releases/$version/ChatGPT-arm64.msix#/dl.zip"
+            }
+        }
+    }
+}
