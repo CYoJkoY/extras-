@@ -1,0 +1,44 @@
+{
+    "version": "7.2.10",
+    "description": "A Telegram client with built-in AI, up to 30 accounts, and chat productivity tools.",
+    "homepage": "https://imem.app",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://imem.app/tos"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://imem.app/download/desktop/win64#/ime-setup-x64.exe",
+            "hash": "91c6b4f6c6ec50bc04be74b68c2430a8e330f1f6851ec815247f3e90e8523799"
+        }
+    },
+    "installer": {
+        "args": [
+            "/DIR=\"$dir\"",
+            "/VERYSILENT",
+            "/SUPPRESSMSGBOXES",
+            "/NORESTART",
+            "/SP-",
+            "/MERGETASKS=\"!desktopicon\""
+        ]
+    },
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": [
+            "/VERYSILENT",
+            "/SUPPRESSMSGBOXES",
+            "/NORESTART"
+        ]
+    },
+    "checkver": {
+        "script": "$n = [int](Invoke-RestMethod 'https://desktop-updates.imem.app/current2').win64.stable.released; '{0}.{1}.{2}' -f [int]($n / 1000000), [int](($n % 1000000) / 1000), [int]($n % 1000)",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://imem.app/download/desktop/win64#/ime-setup-x64.exe"
+            }
+        }
+    }
+}
