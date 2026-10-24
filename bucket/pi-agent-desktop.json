@@ -11,38 +11,72 @@
   },
   "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Force -Recurse",
   "post_install": [
-    "# 1. 确保 persist 目录内存在持久化目录",
-    "if (!(Test-Path \"$persist_dir\\.pi\")) {",
-    "    New-Item -ItemType Directory -Path \"$persist_dir\\.pi\" -Force | Out-Null",
-    "}",
-    "# 2. 若 C 盘已有 .pi 且为普通目录，迁移现有扩展/设置到 persist 后再建立 Junction",
+    "# 1. 确保 persist 目录并联接 ~/.pi",
+    "if (!(Test-Path \"$persist_dir\\.pi\")) { New-Item -ItemType Directory -Path \"$persist_dir\\.pi\" -Force | Out-Null }",
     "$userPi = \"$env:USERPROFILE\\.pi\"",
     "if (Test-Path $userPi) {",
     "    $item = Get-Item $userPi -Force",
     "    if ($item.Attributes -notmatch 'ReparsePoint') {",
-    "        Get-ChildItem -Path $userPi -Force | ForEach-Object {",
-    "            Copy-Item -Path $_.FullName -Destination \"$persist_dir\\.pi\" -Recurse -Force",
-    "        }",
+    "        Get-ChildItem -Path $userPi -Force | ForEach-Object { Copy-Item -Path $_.FullName -Destination \"$persist_dir\\.pi\" -Recurse -Force }",
     "        Remove-Item $userPi -Recurse -Force",
     "    }",
     "}",
-    "# 3. 建立系统级透明软联接 (Junction)",
-    "if (!(Test-Path $userPi)) {",
-    "    New-Item -ItemType Junction -Path $userPi -Target \"$persist_dir\\.pi\" | Out-Null",
-    "}"
+    "if (!(Test-Path $userPi)) { New-Item -ItemType Junction -Path $userPi -Target \"$persist_dir\\.pi\" | Out-Null }",
+    "",
+    "# 2. 生成 C 盘临时缓存清理脚本 clean-cache.cmd",
+    "$cleanerPath = \"$dir\\clean-cache.cmd\"",
+    "$cmdLines = @(",
+    "    '@echo off',",
+    "    'echo Stopping Pi Agent...',",
+    "    'taskkill /F /IM pi-agent-desktop.exe >nul 2>&1',",
+    "    'echo Clearing Electron C-drive cache...',",
+    "    'rd /s /q \"%APPDATA%\\pi-agent-desktop\\Cache\" >nul 2>&1',",
+    "    'rd /s /q \"%APPDATA%\\pi-agent-desktop\\Code Cache\" >nul 2>&1',",
+    "    'rd /s /q \"%APPDATA%\\pi-agent-desktop\\GPUCache\" >nul 2>&1',",
+    "    'rd /s /q \"%APPDATA%\\pi-agent-desktop\\DawnGraphiteCache\" >nul 2>&1',",
+    "    'echo [OK] Cache successfully cleared!',",
+    "    'timeout /t 2 >nul'",
+    ")",
+    "Set-Content -Path $cleanerPath -Value $cmdLines -Encoding UTF8",
+    "",
+    "# 3. 创建【桌面】快捷方式（复用应用自带图标）",
+    "$ws = New-Object -ComObject WScript.Shell",
+    "$deskLnk = $ws.CreateShortcut(\"$env:USERPROFILE\\Desktop\\清理 Pi Agent 缓存.lnk\")",
+    "$deskLnk.TargetPath = \"$cleanerPath\"",
+    "$deskLnk.IconLocation = \"$dir\\pi-agent-desktop.exe,0\"",
+    "$deskLnk.WindowStyle = 1",
+    "$deskLnk.Save()",
+    "",
+    "# 4. 注册【桌面空白处右键菜单】(当前用户 HKCU，无需管理员权限)",
+    "$menuPath = 'HKCU:\\Software\\Classes\\DesktopBackground\\Shell\\PiCleanCache'",
+    "New-Item -Path $menuPath -Force | Out-Null",
+    "Set-ItemProperty -Path $menuPath -Name '(default)' -Value '清理 Pi Agent 缓存'",
+    "Set-ItemProperty -Path $menuPath -Name 'Icon' -Value \"$dir\\pi-agent-desktop.exe\"",
+    "$cmdPath = \"$menuPath\\command\"",
+    "New-Item -Path $cmdPath -Force | Out-Null",
+    "Set-ItemProperty -Path $cmdPath -Name '(default)' -Value \"cmd.exe /c `\"$cleanerPath`\"\""
   ],
   "pre_uninstall": [
-    "# 卸载时仅断开链接，不破坏 persist 内的实际插件和历史会话",
+    "# 卸载时解除 Junction 联接",
     "$userPi = \"$env:USERPROFILE\\.pi\"",
-    "if ((Test-Path $userPi) -and ((Get-Item $userPi).Attributes -match 'ReparsePoint')) {",
-    "    (Get-Item $userPi).Delete()",
-    "}"
+    "if ((Test-Path $userPi) -and ((Get-Item $userPi).Attributes -match 'ReparsePoint')) { (Get-Item $userPi).Delete() }",
+    "",
+    "# 清理桌面快捷方式与右键菜单注册表",
+    "Remove-Item \"$env:USERPROFILE\\Desktop\\清理 Pi Agent 缓存.lnk\" -Force -ErrorAction SilentlyContinue",
+    "Remove-Item 'HKCU:\\Software\\Classes\\DesktopBackground\\Shell\\PiCleanCache' -Recurse -Force -ErrorAction SilentlyContinue"
   ],
-  "bin": "pi-agent-desktop.exe",
+  "bin": [
+    "pi-agent-desktop.exe",
+    "clean-cache.cmd"
+  ],
   "shortcuts": [
     [
       "pi-agent-desktop.exe",
       "Pi Agent"
+    ],
+    [
+      "clean-cache.cmd",
+      "Pi Agent - Clear Cache"
     ]
   ],
   "checkver": {
@@ -56,5 +90,5 @@
       }
     }
   },
-  "notes": "Pi Agent extensions, subagents, and sessions in ~/.pi are automatically mapped to Scoop's persist directory."
+  "notes": "Extensions and sessions (~/.pi) are persisted. C-drive cache can be cleared via the desktop shortcut, right-click desktop menu, or 'clean-cache.cmd'."
 }
