@@ -1,92 +1,92 @@
 {
-  "version": "0.7.6",
-  "description": "Pi - A cross-platform AI coding agent, bringing the Claude Code experience to your desktop. No environment setup, no terminal commands.",
-  "homepage": "https://github.com/abcwyc/pi-agent-desktop",
-  "license": "MIT",
-  "architecture": {
-    "64bit": {
-      "url": "https://github.com/abcwyc/pi-agent-desktop/releases/download/v0.7.6/Pi.Agent_0.7.6_x64-setup.exe#/dl.7z",
-      "hash": "99504f443a044596e9aac67efc17f3ef87e859b3f44f66c41b6507b2ca101212"
-    }
-  },
-  "pre_install": [
-    "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Force -Recurse",
-    "# 提前在 pre_install 中生成 clean-cache.cmd，确保 Scoop 在创建 Shim 时文件已就绪",
-    "$cleanerPath = \"$dir\\clean-cache.cmd\"",
-    "$cmdLines = @(",
-    "    '@echo off',",
-    "    'echo [1/2] Terminating Pi Desktop process...',",
-    "    'taskkill /F /IM pi-agent-desktop.exe >nul 2>&1',",
-    "    'echo [2/2] Wiping temporary WebView2 and C-drive caches...',",
-    "    'rd /s /q \"%APPDATA%\\pi-agent-desktop\\Cache\" >nul 2>&1',",
-    "    'rd /s /q \"%APPDATA%\\pi-agent-desktop\\Code Cache\" >nul 2>&1',",
-    "    'rd /s /q \"%LOCALAPPDATA%\\pi-agent-desktop\\EBWebView\" >nul 2>&1',",
-    "    'echo [Done] Cache cleaned. Plugins and data in persist remain untouched!',",
-    "    'timeout /t 2 >nul'",
-    ")",
-    "Set-Content -Path $cleanerPath -Value $cmdLines -Encoding ASCII"
-  ],
-  "post_install": [
-    "# 1. 结束占用相关目录的后台进程",
-    "Stop-Process -Name 'pi-agent-desktop', 'node', 'msedgewebview2' -Force -ErrorAction SilentlyContinue",
-    "",
-    "# 2. 确保 Scoop 的 persist 真实物理目录准备就绪",
-    "$targetDir = \"$persist_dir\\.pi\"",
-    "if (!(Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }",
-    "",
-    "# 3. 清理/迁移现有目录并建立原生 Junction 软链接",
-    "$linkPath = \"$env:USERPROFILE\\.pi\"",
-    "$item = Get-Item -LiteralPath $linkPath -Force -ErrorAction SilentlyContinue",
-    "if ($item) {",
-    "    $isReparse = [bool]($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)",
-    "    if ($isReparse) {",
-    "        # 如果已是软链接/Junction，调用 .NET 方法仅删除链接节点本身，绝不伤及目标数据",
-    "        $item.Delete()",
-    "    } else {",
-    "        # 如果是已有真实文件夹，迁移数据至 persist 并安全删除原物理目录",
-    "        Get-ChildItem -LiteralPath $linkPath -Force | ForEach-Object {",
-    "            Copy-Item -LiteralPath $_.FullName -Destination $targetDir -Recurse -Force",
-    "        }",
-    "        Remove-Item -LiteralPath $linkPath -Recurse -Force",
-    "    }",
-    "}",
-    "# 针对失效死链的额外兜底清理",
-    "if (Test-Path -LiteralPath $linkPath) { Remove-Item -LiteralPath $linkPath -Force -Recurse -ErrorAction SilentlyContinue }",
-    "",
-    "# 4. 原生创建 Junction（-Value 兼容 PowerShell 5.1 与 7+）",
-    "New-Item -ItemType Junction -Path $linkPath -Value $targetDir -Force | Out-Null"
-  ],
-  "pre_uninstall": [
-    "# 卸载时仅断开软链接，保护 persist 内的数据",
-    "$linkPath = \"$env:USERPROFILE\\.pi\"",
-    "$item = Get-Item -LiteralPath $linkPath -Force -ErrorAction SilentlyContinue",
-    "if ($item -and ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {",
-    "    $item.Delete()",
-    "}"
-  ],
-  "bin": [
-    "pi-agent-desktop.exe",
-    "clean-cache.cmd"
-  ],
-  "shortcuts": [
-    [
-      "pi-agent-desktop.exe",
-      "Pi Agent"
-    ],
-    [
-      "clean-cache.cmd",
-      "Pi Agent - Clear Cache"
-    ]
-  ],
-  "checkver": {
-    "github": "https://github.com/abcwyc/pi-agent-desktop",
-    "regex": "(?:/releases/tag/|^)v([\\d.]+)"
-  },
-  "autoupdate": {
+    "version": "0.7.7",
+    "description": "Pi - A cross-platform AI coding agent, bringing the Claude Code experience to your desktop. No environment setup, no terminal commands.",
+    "homepage": "https://github.com/abcwyc/pi-agent-desktop",
+    "license": "MIT",
     "architecture": {
-      "64bit": {
-        "url": "https://github.com/abcwyc/pi-agent-desktop/releases/download/v$version/Pi.Agent_$version_x64-setup.exe#/dl.7z"
-      }
+        "64bit": {
+            "url": "https://github.com/abcwyc/pi-agent-desktop/releases/download/v0.7.7/Pi.Agent_0.7.7_x64-setup.exe#/dl.7z",
+            "hash": "775871365869f647467e04457430820f529f9d2271508c4fa6643e3c85c36416"
+        }
+    },
+    "pre_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Force -Recurse",
+        "# 提前在 pre_install 中生成 clean-cache.cmd，确保 Scoop 在创建 Shim 时文件已就绪",
+        "$cleanerPath = \"$dir\\clean-cache.cmd\"",
+        "$cmdLines = @(",
+        "    '@echo off',",
+        "    'echo [1/2] Terminating Pi Desktop process...',",
+        "    'taskkill /F /IM pi-agent-desktop.exe >nul 2>&1',",
+        "    'echo [2/2] Wiping temporary WebView2 and C-drive caches...',",
+        "    'rd /s /q \"%APPDATA%\\pi-agent-desktop\\Cache\" >nul 2>&1',",
+        "    'rd /s /q \"%APPDATA%\\pi-agent-desktop\\Code Cache\" >nul 2>&1',",
+        "    'rd /s /q \"%LOCALAPPDATA%\\pi-agent-desktop\\EBWebView\" >nul 2>&1',",
+        "    'echo [Done] Cache cleaned. Plugins and data in persist remain untouched!',",
+        "    'timeout /t 2 >nul'",
+        ")",
+        "Set-Content -Path $cleanerPath -Value $cmdLines -Encoding ASCII"
+    ],
+    "post_install": [
+        "# 1. 结束占用相关目录的后台进程",
+        "Stop-Process -Name 'pi-agent-desktop', 'node', 'msedgewebview2' -Force -ErrorAction SilentlyContinue",
+        "",
+        "# 2. 确保 Scoop 的 persist 真实物理目录准备就绪",
+        "$targetDir = \"$persist_dir\\.pi\"",
+        "if (!(Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }",
+        "",
+        "# 3. 清理/迁移现有目录并建立原生 Junction 软链接",
+        "$linkPath = \"$env:USERPROFILE\\.pi\"",
+        "$item = Get-Item -LiteralPath $linkPath -Force -ErrorAction SilentlyContinue",
+        "if ($item) {",
+        "    $isReparse = [bool]($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)",
+        "    if ($isReparse) {",
+        "        # 如果已是软链接/Junction，调用 .NET 方法仅删除链接节点本身，绝不伤及目标数据",
+        "        $item.Delete()",
+        "    } else {",
+        "        # 如果是已有真实文件夹，迁移数据至 persist 并安全删除原物理目录",
+        "        Get-ChildItem -LiteralPath $linkPath -Force | ForEach-Object {",
+        "            Copy-Item -LiteralPath $_.FullName -Destination $targetDir -Recurse -Force",
+        "        }",
+        "        Remove-Item -LiteralPath $linkPath -Recurse -Force",
+        "    }",
+        "}",
+        "# 针对失效死链的额外兜底清理",
+        "if (Test-Path -LiteralPath $linkPath) { Remove-Item -LiteralPath $linkPath -Force -Recurse -ErrorAction SilentlyContinue }",
+        "",
+        "# 4. 原生创建 Junction（-Value 兼容 PowerShell 5.1 与 7+）",
+        "New-Item -ItemType Junction -Path $linkPath -Value $targetDir -Force | Out-Null"
+    ],
+    "pre_uninstall": [
+        "# 卸载时仅断开软链接，保护 persist 内的数据",
+        "$linkPath = \"$env:USERPROFILE\\.pi\"",
+        "$item = Get-Item -LiteralPath $linkPath -Force -ErrorAction SilentlyContinue",
+        "if ($item -and ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {",
+        "    $item.Delete()",
+        "}"
+    ],
+    "bin": [
+        "pi-agent-desktop.exe",
+        "clean-cache.cmd"
+    ],
+    "shortcuts": [
+        [
+            "pi-agent-desktop.exe",
+            "Pi Agent"
+        ],
+        [
+            "clean-cache.cmd",
+            "Pi Agent - Clear Cache"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/abcwyc/pi-agent-desktop",
+        "regex": "(?:/releases/tag/|^)v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/abcwyc/pi-agent-desktop/releases/download/v$version/Pi.Agent_$version_x64-setup.exe#/dl.7z"
+            }
+        }
     }
-  }
 }
