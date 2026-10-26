@@ -23,10 +23,6 @@
     "bin": [
         [
             "clean-cache.ps1",
-            "scoop-clean-chatgpt"
-        ],
-        [
-            "clean-cache.ps1",
             "chatgpt-clean"
         ]
     ],
@@ -105,9 +101,14 @@
         "        if (Test-Path -LiteralPath $cPath) { cmd.exe /c \"rmdir /S /Q `\"$cPath`\"\" 2>&1 | Out-Null }",
         "        cmd.exe /c \"mklink /J `\"$cPath`\" `\"$pPath`\"\" 2>&1 | Out-Null",
         "    }",
-        "}"
+        "}",
+        "# 4. 注册 Scoop 别名命令",
+        "scoop alias add clean-chatgpt 'chatgpt-clean' 'Clean ChatGPT cache & temp storage' 2>&1 | Out-Null"
     ],
     "pre_uninstall": [
+        "# 1. 清理 Scoop 别名",
+        "scoop alias rm clean-chatgpt 2>&1 | Out-Null",
+        "# 2. 结束进程并拆除目录 Junction",
         "Stop-Process -Name ChatGPT, codex, crashpad_handler -Force -ErrorAction SilentlyContinue",
         "$targets = @(",
         "    \"$env:APPDATA\\ChatGPT\", \"$env:APPDATA\\Codex\",",
