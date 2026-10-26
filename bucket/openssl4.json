@@ -1,20 +1,20 @@
 {
-    "version": "4.0.3",
+    "version": "4.1.0",
     "description": "TLS/SSL toolkit (4.x stream)",
     "homepage": "https://github.com/openssl/openssl",
     "license": "Apache-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.0.3-x64.zip",
-            "hash": "5ce17b70c33611c97fdcc2e02dafb09d60e0d518caa9b004d836dabe1683feea"
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.1.0-x64.zip",
+            "hash": "50af6cfddc86360773f6d7784988889bc282a382d8daeb188d47919c7697f455"
         },
         "32bit": {
-            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.0.3-x86.zip",
-            "hash": "567f3ef63121ba483a904e3a2509379a6053786d86b332628300e28e46c56b0c"
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.1.0-x86.zip",
+            "hash": "55ebd988f4bcb3ba01f9a5131e76250f2ed444ac6b1be34ad515468ffab7fded"
         },
         "arm64": {
-            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.0.3-arm64.zip",
-            "hash": "71408ec78501867c8b9313fed32852aeed025829470ae75fd56ec7bf66980730"
+            "url": "https://github.com/CYoJkoY/extras-/releases/download/OpenSSL/openssl-4.1.0-arm64.zip",
+            "hash": "98ba38dcdecf44656be43c903f069e6baf21c1869d81b215087af513526375c0"
         }
     },
     "bin": "bin\\openssl.exe",
