@@ -1,0 +1,44 @@
+{
+    "version": "2.0.10",
+    "description": "A ready-to-go translation and OCR tool developed with WPF.",
+    "homepage": "https://stranslate.zggsong.com",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/STranslate/STranslate/blob/main/LICENSE"
+    },
+    "notes": "配置已通过 Scoop 持久化至 $persist_dir\\PortableConfig。请在 STranslate 设置中关闭「自动检查更新」，避免与 Scoop 更新机制冲突。",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/STranslate/STranslate/releases/download/v2.0.10/STranslate-win-Portable.zip",
+            "hash": "d63f4cef674ae2f6ef782e1c7fa43b2475e62aea0ad31c34b41ab5c9cb58abc5"
+        }
+    },
+    "pre_install": "ensure \"$dir\\current\\PortableConfig\"",
+    "bin": [
+        [
+            "STranslate.exe",
+            "stranslate"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "STranslate.exe",
+            "STranslate"
+        ]
+    ],
+    "persist": [
+        [
+            "current/PortableConfig",
+            "PortableConfig"
+        ]
+    ],
+    "pre_uninstall": "Stop-Process -Name 'STranslate' -Force -ErrorAction SilentlyContinue",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/STranslate/STranslate/releases/download/v$version/STranslate-win-Portable.zip"
+            }
+        }
+    }
+}
