@@ -13,15 +13,18 @@
         }
     },
     "installer": {
+        "file": "ime-setup-x64.exe",
         "args": [
             "/DIR=\"$dir\"",
             "/VERYSILENT",
             "/SUPPRESSMSGBOXES",
             "/NORESTART",
             "/SP-",
+            "/NOICONS",
             "/MERGETASKS=\"!desktopicon\""
         ]
     },
+    "post_install": "Remove-Item \"$dir\\ime-setup-x64.exe\" -Force",
     "uninstaller": {
         "file": "unins000.exe",
         "args": [
@@ -30,8 +33,16 @@
             "/NORESTART"
         ]
     },
+    "bin": "iMe.exe",
+    "shortcuts": [
+        [
+            "iMe.exe",
+            "iMe"
+        ]
+    ],
+    "persist": "tdata",
     "checkver": {
-        "script": "$n = [int](Invoke-RestMethod 'https://desktop-updates.imem.app/current2').win64.stable.released; '{0}.{1}.{2}' -f [int]($n / 1000000), [int](($n % 1000000) / 1000), [int]($n % 1000)",
+        "script": "$n = [int](Invoke-RestMethod 'https://desktop-updates.imem.app/current2').win64.stable.released; '{0}.{1}.{2}' -f [Math]::Floor($n / 1000000), [Math]::Floor(($n % 1000000) / 1000), ($n % 1000)",
         "regex": "([\\d.]+)"
     },
     "autoupdate": {
