@@ -6,7 +6,7 @@
         "identifier": "MIT",
         "url": "https://github.com/STranslate/STranslate/blob/main/LICENSE"
     },
-    "notes": "配置已通过 Scoop 持久化至 $persist_dir\\PortableConfig。请在 STranslate 设置中关闭「自动检查更新」，避免与 Scoop 更新机制冲突。",
+    "notes": "Configuration is persisted at '$persist_dir\\PortableConfig'. Please disable 'Auto check for updates' in STranslate settings to avoid conflicts with Scoop.",
     "architecture": {
         "64bit": {
             "url": "https://github.com/STranslate/STranslate/releases/download/v2.0.10/STranslate-win-Portable.zip",
