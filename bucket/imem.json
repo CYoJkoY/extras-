@@ -1,5 +1,5 @@
 {
-    "version": "7.3.3",
+    "version": "7.3.4",
     "description": "A Telegram client with built-in AI, up to 30 accounts, and chat productivity tools.",
     "homepage": "https://imem.app",
     "license": {
@@ -9,7 +9,7 @@
     "architecture": {
         "64bit": {
             "url": "https://imem.app/download/desktop/win64#/ime-setup-x64.exe",
-            "hash": "fd38e790fe2030fee4fd288465beb03fb1bb89da1dde7cce23dc28a20bd5126d"
+            "hash": "dac5c9e54c5fb0bf7c8c9b3b8d93823e55f0ef7fd70332b489ca617959a88518"
         }
     },
     "installer": {
