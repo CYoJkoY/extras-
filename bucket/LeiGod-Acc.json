@@ -1,12 +1,12 @@
 {
-    "version": "11.3.3.0",
+    "version": "11.3.3.2",
     "description": "雷神加速器 - 游戏网络加速客户端",
     "homepage": "https://www.leigod.com/",
     "license": "Proprietary",
     "architecture": {
         "64bit": {
-            "url": "https://update.leigod.com/soft/leigod/win/11.0.0.0/LeiGodSetup.11.3.3.0.exe#/dl.7z",
-            "hash": "e17633f4594c1f59ee62fb31a36e080e946905e8a1dd65d32c3627fa9269044f"
+            "url": "https://update.leigod.com/soft/leigod/win/11.0.0.0/LeiGodSetup.11.3.3.2.exe#/dl.7z",
+            "hash": "a849b2839344e7827f93a13b4b425d7b15f1b67babac6d1fb68a63190ab84820"
         }
     },
     "extract_to": "installer",
@@ -107,9 +107,7 @@
             "雷神加速器"
         ]
     ],
-    "notes": [
-        "This manifest extracts the client payload from the official installer instead of running the vendor setup program. If a LeiGod release requires a separate system driver/service installation, that step is not performed by this portable extraction."
-    ],
+    "notes": "This manifest extracts the client payload from the official installer instead of running the vendor setup program. If a LeiGod release requires a separate system driver/service installation, that step is not performed by this portable extraction.",
     "checkver": {
         "url": "https://www.leigod.com/configs.json",
         "jsonpath": "$.windows.download_url",
