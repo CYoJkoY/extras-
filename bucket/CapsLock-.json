@@ -16,14 +16,56 @@
             "hash": "31fdb4e76627d6f278ddeb3ade43639556b10e92644cd727cfdf6cfddc3f4b3b"
         }
     },
+    "pre_install": [
+        "$process = 'CapsLock-'",
+        "Get-Process -Name $process -ErrorAction SilentlyContinue | Stop-Process -Force"
+    ],
+    "post_install": [
+        "$appRoot = (Get-Item $dir).Parent.FullName",
+        "$currentExe = Join-Path $appRoot 'current\\CapsLock-.exe'",
+        "$quotedExe = '\"' + $currentExe + '\"'",
+        "# 1. 自动适配并固化注册表开机自启路径",
+        "$runKey = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'",
+        "@('CapsLock-', 'CapsLock Extended') | ForEach-Object {",
+        "    if (Get-ItemProperty -Path $runKey -Name $_ -ErrorAction SilentlyContinue) {",
+        "        Set-ItemProperty -Path $runKey -Name $_ -Value $quotedExe",
+        "    }",
+        "}",
+        "# 2. 自动适配 Startup 目录快捷方式目标",
+        "$startupDir = [Environment]::GetFolderPath('Startup')",
+        "@('CapsLock-.lnk', 'CapsLock Extended.lnk') | ForEach-Object {",
+        "    $lnkPath = Join-Path $startupDir $_",
+        "    if (Test-Path $lnkPath) {",
+        "        $ws = New-Object -ComObject WScript.Shell",
+        "        $sc = $ws.CreateShortcut($lnkPath)",
+        "        $sc.TargetPath = $currentExe",
+        "        $sc.WorkingDirectory = Join-Path $appRoot 'current'",
+        "        $sc.Save()",
+        "    }",
+        "}",
+        "# 3. 清理 Windows 11 通知区域 (NotifyIconSettings) 旧版本残留项",
+        "$notifyPath = 'HKCU:\\Control Panel\\NotifyIconSettings'",
+        "if (Test-Path $notifyPath) {",
+        "    Get-ChildItem -Path $notifyPath | ForEach-Object {",
+        "        $exec = (Get-ItemProperty -Path $_.PSPath -Name ExecutablePath -ErrorAction SilentlyContinue).ExecutablePath",
+        "        if ($exec -and $exec -like '*\\CapsLock-\\*' -and $exec -notlike '*\\current\\*') {",
+        "            Remove-Item -Path $_.PSPath -Recurse -Force -ErrorAction SilentlyContinue",
+        "        }",
+        "    }",
+        "}"
+    ],
     "bin": "CapsLock-.exe",
     "shortcuts": [
         [
-            "CapsLock-.exe",
+            "../current/CapsLock-.exe",
             "CapsLock Extended"
         ]
     ],
     "persist": "configs",
+    "pre_uninstall": [
+        "$process = 'CapsLock-'",
+        "Get-Process -Name $process -ErrorAction SilentlyContinue | Stop-Process -Force"
+    ],
     "checkver": {
         "github": "https://github.com/CYoJkoY/CapsLock-"
     },
