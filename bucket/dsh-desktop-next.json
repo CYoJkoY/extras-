@@ -60,7 +60,7 @@
     "Set-Content -Path $scriptPath -Value ($lines -join [Environment]::NewLine) -Encoding utf8"
   ],
   "checkver": {
-    "github": "anywhere-labs/dsh-desktop",
+    "github": "https://github.com/anywhere-labs/dsh-desktop",
     "regex": "releases/tag/v?([\\d.]+-next(?:[.-]\\d+)?)"
   },
   "autoupdate": {
