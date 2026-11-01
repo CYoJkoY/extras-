@@ -16,7 +16,7 @@
   "persist": "data",
   "bin": [
     [
-      "DSH-NEXT.exe",
+      "DSH NEXT.exe",
       "dsh-next"
     ],
     [
@@ -26,29 +26,30 @@
   ],
   "shortcuts": [
     [
-      "DSH-NEXT.exe",
+      "DSH NEXT.exe",
       "DSH NEXT"
     ]
   ],
   "post_install": [
     "$scriptPath = \"$dir\\dsh-clean.ps1\"",
+    "$resolvedPersist = \"$persist_dir\\data\"",
     "$lines = @(",
     "  'param([switch]$All)',",
-    "  '$proc = Get-Process -Name \"DSH-NEXT\" -ErrorAction SilentlyContinue',",
-    "  'if ($proc) { Write-Warning \"DSH-NEXT 正在运行，请先退出程序再清理缓存。\"; exit 1 }',",
+    "  '$proc = Get-Process -Name @(\"DSH NEXT\", \"DSH-NEXT\") -ErrorAction SilentlyContinue',",
+    "  'if ($proc) { Write-Warning \"DSH NEXT 正在运行，请先退出程序再清理缓存。\"; exit 1 }',",
     "  '$dshHome = $env:DSH_DESKTOP_NEXT_HOME',",
     "  'if (-not $dshHome) { $dshHome = [Environment]::GetEnvironmentVariable(\"DSH_DESKTOP_NEXT_HOME\", \"User\") }',",
-    "  'if (-not $dshHome -or -not (Test-Path $dshHome)) { $dshHome = \"$HOME\\.dsh\" }',",
-    "  '$targets = @(',",
-    "  '  \"$dshHome\\cache\",',",
-    "  '  \"$dshHome\\tmp\",',",
-    "  '  \"$dshHome\\temp\",',",
-    "  '  \"$env:APPDATA\\DSH-NEXT\\Cache\",',",
-    "  '  \"$env:APPDATA\\DSH-NEXT\\Code Cache\",',",
-    "  '  \"$env:APPDATA\\DSH-NEXT\\GPUCache\",',",
-    "  '  \"$env:LOCALAPPDATA\\dsh-desktop-updater\"',",
-    "  ')',",
-    "  'if ($All) { $targets += \"$dshHome\\logs\" }',",
+    "  \"if (-not `$dshHome -or -not (Test-Path `$dshHome)) { `$dshHome = '$resolvedPersist' }\",",
+    "  'if (-not (Test-Path $dshHome)) { $dshHome = \"$HOME\\.dsh\" }',",
+    "  '$targets = [System.Collections.Generic.List[string]]::new()',",
+    "  'foreach ($sub in @(\"cache\", \"tmp\", \"temp\")) { $targets.Add(\"$dshHome\\$sub\") }',",
+    "  'foreach ($appName in @(\"DSH NEXT\", \"DSH-NEXT\")) {',",
+    "  '  foreach ($sub in @(\"Cache\", \"Code Cache\", \"GPUCache\")) {',",
+    "  '    $targets.Add(\"$env:APPDATA\\$appName\\$sub\")',",
+    "  '  }',",
+    "  '}',",
+    "  '$targets.Add(\"$env:LOCALAPPDATA\\dsh-desktop-updater\")',",
+    "  'if ($All) { $targets.Add(\"$dshHome\\logs\") }',",
     "  'foreach ($target in $targets) {',",
     "  '  if (Test-Path $target) {',",
     "  '    Remove-Item -Path $target -Recurse -Force -ErrorAction SilentlyContinue',",
