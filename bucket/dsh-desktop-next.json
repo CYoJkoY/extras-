@@ -10,11 +10,14 @@
       "hash": "01cfdf51180ab5344e96116bbfae35067cd37a20b49214d897a299caefead17e"
     }
   },
-  "env_set": {
-    "DSH_DESKTOP_NEXT_HOME": "$dir\\data"
-  },
   "persist": "data",
   "pre_install": [
+    "# 1. 预先确保物理持久化目录存在，防止 privateDirectory 抛出异常",
+    "New-Item -ItemType Directory -Path \"$persist_dir\\data\" -Force | Out-Null",
+    "[Environment]::SetEnvironmentVariable('DSH_DESKTOP_NEXT_HOME', \"$persist_dir\\data\", 'User')",
+    "$env:DSH_DESKTOP_NEXT_HOME = \"$persist_dir\\data\"",
+    "",
+    "# 2. 在创建 shim 之前写入 dsh-clean.ps1 脚本",
     "$scriptContent = @'",
     "param([switch]$All)",
     "$proc = Get-Process -Name 'DSH NEXT', 'DSH-NEXT' -ErrorAction SilentlyContinue",
