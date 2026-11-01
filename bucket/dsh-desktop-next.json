@@ -1,0 +1,76 @@
+{
+  "version": "2.0.21-next",
+  "description": "Desktop client for DSH by Anywhere Labs",
+  "homepage": "https://github.com/anywhere-labs/dsh-desktop",
+  "license": "MIT",
+  "notes": "DSH data is redirected to persist. Run 'dsh-clean' to clear runtime cache, or 'dsh-clean -All' to include logs.",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/anywhere-labs/dsh-desktop/releases/download/v2.0.21-next/DSH-NEXT-2.0.21-next-x64-Portable.zip",
+      "hash": "01cfdf51180ab5344e96116bbfae35067cd37a20b49214d897a299caefead17e"
+    }
+  },
+  "env_set": {
+    "DSH_DESKTOP_NEXT_HOME": "$persist_dir\\data"
+  },
+  "persist": "data",
+  "bin": [
+    [
+      "DSH-NEXT.exe",
+      "dsh-next"
+    ],
+    [
+      "dsh-clean.ps1",
+      "dsh-clean"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "DSH-NEXT.exe",
+      "DSH NEXT"
+    ]
+  ],
+  "post_install": [
+    "$scriptPath = \"$dir\\dsh-clean.ps1\"",
+    "$lines = @(",
+    "  'param([switch]$All)',",
+    "  '$proc = Get-Process -Name \"DSH-NEXT\" -ErrorAction SilentlyContinue',",
+    "  'if ($proc) { Write-Warning \"DSH-NEXT 正在运行，请先退出程序再清理缓存。\"; exit 1 }',",
+    "  '$dshHome = $env:DSH_DESKTOP_NEXT_HOME',",
+    "  'if (-not $dshHome) { $dshHome = [Environment]::GetEnvironmentVariable(\"DSH_DESKTOP_NEXT_HOME\", \"User\") }',",
+    "  'if (-not $dshHome -or -not (Test-Path $dshHome)) { $dshHome = \"$HOME\\.dsh\" }',",
+    "  '$targets = @(',",
+    "  '  \"$dshHome\\cache\",',",
+    "  '  \"$dshHome\\tmp\",',",
+    "  '  \"$dshHome\\temp\",',",
+    "  '  \"$env:APPDATA\\DSH-NEXT\\Cache\",',",
+    "  '  \"$env:APPDATA\\DSH-NEXT\\Code Cache\",',",
+    "  '  \"$env:APPDATA\\DSH-NEXT\\GPUCache\",',",
+    "  '  \"$env:LOCALAPPDATA\\dsh-desktop-updater\"',",
+    "  ')',",
+    "  'if ($All) { $targets += \"$dshHome\\logs\" }',",
+    "  'foreach ($target in $targets) {',",
+    "  '  if (Test-Path $target) {',",
+    "  '    Remove-Item -Path $target -Recurse -Force -ErrorAction SilentlyContinue',",
+    "  '    Write-Host \"[Cleaned] $target\" -ForegroundColor Green',",
+    "  '  }',",
+    "  '}',",
+    "  'Write-Host \"DSH 缓存清理完成。\" -ForegroundColor Cyan'",
+    ")",
+    "Set-Content -Path $scriptPath -Value ($lines -join [Environment]::NewLine) -Encoding utf8"
+  ],
+  "checkver": {
+    "github": "anywhere-labs/dsh-desktop",
+    "regex": "releases/tag/v?([\\d.]+-next(?:[.-]\\d+)?)"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/anywhere-labs/dsh-desktop/releases/download/v$version/DSH-NEXT-$version-x64-Portable.zip"
+      }
+    },
+    "hash": {
+      "url": "$baseurl/SHA256SUMS.txt"
+    }
+  }
+}
