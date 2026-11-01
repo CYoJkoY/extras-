@@ -14,23 +14,7 @@
     "DSH_DESKTOP_NEXT_HOME": "$dir\\data"
   },
   "persist": "data",
-  "bin": [
-    [
-      "DSH NEXT.exe",
-      "dsh-next"
-    ],
-    [
-      "dsh-clean.ps1",
-      "dsh-clean"
-    ]
-  ],
-  "shortcuts": [
-    [
-      "DSH NEXT.exe",
-      "DSH NEXT"
-    ]
-  ],
-  "post_install": [
+  "pre_install": [
     "$scriptContent = @'",
     "param([switch]$All)",
     "$proc = Get-Process -Name 'DSH NEXT', 'DSH-NEXT' -ErrorAction SilentlyContinue",
@@ -57,6 +41,22 @@
     "Write-Host 'DSH 缓存清理完成。' -ForegroundColor Cyan",
     "'@",
     "Set-Content -Path \"$dir\\dsh-clean.ps1\" -Value $scriptContent -Encoding utf8"
+  ],
+  "bin": [
+    [
+      "DSH NEXT.exe",
+      "dsh-next"
+    ],
+    [
+      "dsh-clean.ps1",
+      "dsh-clean"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "DSH NEXT.exe",
+      "DSH NEXT"
+    ]
   ],
   "pre_uninstall": [
     "$proc = Get-Process -Name 'DSH NEXT', 'DSH-NEXT' -ErrorAction SilentlyContinue",
