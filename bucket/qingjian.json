@@ -1,5 +1,5 @@
 {
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "A Rust-based Chinese Pinyin input method with translation candidates for language learning.",
     "homepage": "https://qingjian.app",
     "license": {
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/qingjian-team/qingjian/releases/download/v0.3.2/qingjian-0.3.2-windows-x86_64-setup.exe",
-            "hash": "7437277f82d940a573cf47aa8994600a2a1b9b73625643114807452a017f925b"
+            "url": "https://github.com/qingjian-team/qingjian/releases/download/v0.3.3/qingjian-0.3.3-windows-x86_64-setup.exe",
+            "hash": "c201e380b7be21179100d64b8adfb6b4c73b565ddcf3bf0fc44923161d0abb73"
         }
     },
     "installer": {
