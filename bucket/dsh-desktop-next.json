@@ -1,13 +1,13 @@
 {
-    "version": "2.0.23-next",
+    "version": "2.0.24-next",
     "description": "Desktop client for DeepSeek Harness (DSH) by Anywhere Labs",
     "homepage": "https://github.com/anywhere-labs/dsh-desktop",
     "license": "MIT",
     "notes": "DSH data is redirected to persist. Run 'dsh-clean' to clear runtime cache, or 'dsh-clean -All' to include logs.",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/anywhere-labs/dsh-desktop/releases/download/v2.0.23-next/DSH-NEXT-2.0.23-next-x64-Portable.zip",
-            "hash": "94c6881c0aac48ff8ff2973dceaa9a66f4adffc9b6816b53fe103e6c1f535b3a"
+            "url": "https://github.com/anywhere-labs/dsh-desktop/releases/download/v2.0.24-next/DSH-NEXT-2.0.24-next-x64-Portable.zip",
+            "hash": "20a8ed209fa181e76bf39d05937ba3a689cd1fc4ad1fdc4fa7d9a6b79fe86b19"
         }
     },
     "persist": "data",
