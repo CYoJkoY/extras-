@@ -1,0 +1,29 @@
+{
+    "version": "0.1.0",
+    "description": "PSD/PSB thumbnails and preview pane in Windows Explorer, powered by a native Zig COM shell extension.",
+    "homepage": "https://github.com/CYoJkoY/psd-preview",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/CYoJkoY/psd-preview/releases/download/v0.1.0/psd-preview-v0.1.0-x86_64-windows.zip",
+            "hash": "2712d5d7bd15c6adb212eafa8d129310bb08e746394a82a596a2e83ec73e9581"
+        }
+    },
+    "post_install": [
+        "Start-Process -FilePath regsvr32.exe -ArgumentList @('/s', '/n', '/i:user', \"`\"$dir\\psd_preview.dll`\"\") -Wait"
+    ],
+    "pre_uninstall": [
+        "if (Test-Path -LiteralPath \"$dir\\psd_preview.dll\") {",
+        "    Start-Process -FilePath regsvr32.exe -ArgumentList @('/u', '/s', '/n', '/i:user', \"`\"$dir\\psd_preview.dll`\"\") -Wait",
+        "}"
+    ],
+    "notes": "Registers the handler for the current user only (HKCU); no administrator rights required. If thumbnails do not refresh immediately, restart Explorer or clear the thumbnail cache.",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/CYoJkoY/psd-preview/releases/download/v$version/psd-preview-v$version-x86_64-windows.zip"
+            }
+        }
+    }
+}
