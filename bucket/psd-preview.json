@@ -1,12 +1,12 @@
 {
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "PSD/PSB thumbnails and preview pane in Windows Explorer, powered by a native Zig COM shell extension.",
     "homepage": "https://github.com/CYoJkoY/psd-preview",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/CYoJkoY/psd-preview/releases/download/v0.1.0/psd-preview-v0.1.0-x86_64-windows.zip",
-            "hash": "2712d5d7bd15c6adb212eafa8d129310bb08e746394a82a596a2e83ec73e9581"
+            "url": "https://github.com/CYoJkoY/psd-preview/releases/download/v0.1.1/psd-preview-v0.1.1-x86_64-windows.zip",
+            "hash": "4020b9808fc2771e93178ebbafb4f9eb5a2b7b7730acdee8c077d58c2b5eabba"
         }
     },
     "post_install": [
