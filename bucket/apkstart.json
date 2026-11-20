@@ -1,0 +1,29 @@
+{
+    "version": "0.6.2",
+    "description": "ApkStart - A tool to start Android apps on Windows",
+    "homepage": "https://github.com/RoutineMiku/apkstart",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/RoutineMiku/apkstart/releases/download/v0.6.2/ApkStart-v0.6.2-win64-portable.zip",
+            "hash": "aedd4ddb37e4b9d64527fe623e8fa64c80d2218e7b545b4c6b9d63b8724c86f3"
+        }
+    },
+    "bin": "ApkStart.exe",
+    "shortcuts": [
+        [
+            "ApkStart.exe",
+            "ApkStart"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/RoutineMiku/apkstart"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/RoutineMiku/apkstart/releases/download/v$version/ApkStart-v$version-win64-portable.zip"
+            }
+        }
+    }
+}
