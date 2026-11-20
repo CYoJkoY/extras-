@@ -1,0 +1,89 @@
+{
+    "version": "5.1.0",
+    "description": "Modern Windows Explorer thumbnail and preview pane shell extension supporting PSD and 400+ image formats",
+    "homepage": "https://github.com/LunarWerxs/SageThumbs-2k",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/LunarWerxs/SageThumbs-2k/releases/download/v5.1.0/SageThumbs2K-Portable-5.1.0.zip",
+            "hash": "sha256:39b7bd6f9c6a65f0b853a9fa2dc7b1e9077182dee5aac34cf4015d7a44186ad9"
+        }
+    },
+    "bin": [
+        "st2k.exe",
+        [
+            "SageThumbs2K.exe",
+            "sagethumbs-2k"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "SageThumbs2K.exe",
+            "SageThumbs 2K"
+        ]
+    ],
+    "persist": "config",
+    "post_install": [
+        "$localTarget = ensure \"$persist_dir\\LocalAppData\"",
+        "$roamingTarget = ensure \"$persist_dir\\RoamingAppData\"",
+        "$junctionMap = @{",
+        "    (Join-Path $env:LOCALAPPDATA 'SageThumbs2K') = $localTarget",
+        "    (Join-Path $env:APPDATA 'SageThumbs2K')      = $roamingTarget",
+        "}",
+        "foreach ($entry in $junctionMap.GetEnumerator()) {",
+        "    $linkPath = $entry.Key",
+        "    $targetPath = $entry.Value",
+        "    if (Test-Path $linkPath) {",
+        "        $item = Get-Item $linkPath -Force",
+        "        if (-not ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {",
+        "            Copy-Item \"$linkPath\\*\" $targetPath -Recurse -Force -ErrorAction SilentlyContinue",
+        "            Remove-Item $linkPath -Recurse -Force",
+        "        }",
+        "    }",
+        "    if (-not (Test-Path $linkPath)) {",
+        "        New-Item -ItemType Junction -Path $linkPath -Target $targetPath | Out-Null",
+        "    }",
+        "}",
+        "$dll = Get-ChildItem -Path $dir -Filter '*.dll' -Recurse | Where-Object { $_.Name -match 'SageThumbs|st2k' } | Select-Object -First 1",
+        "if ($dll) {",
+        "    if (is_admin) {",
+        "        Start-Process regsvr32.exe -ArgumentList @('/s', \"`\"$($dll.FullName)`\"\") -Wait",
+        "    } else {",
+        "        Start-Process regsvr32.exe -ArgumentList @('/s', '/n', '/i:user', \"`\"$($dll.FullName)`\"\") -Wait",
+        "        warn '若上游壳层 DLL 仅支持系统级 CLSID 注册，请以管理员身份运行 scoop reset sagethumbs-2k。'",
+        "    }",
+        "}"
+    ],
+    "pre_uninstall": [
+        "$dll = Get-ChildItem -Path $dir -Filter '*.dll' -Recurse | Where-Object { $_.Name -match 'SageThumbs|st2k' } | Select-Object -First 1",
+        "if ($dll) {",
+        "    if (is_admin) {",
+        "        Start-Process regsvr32.exe -ArgumentList @('/u', '/s', \"`\"$($dll.FullName)`\"\") -Wait",
+        "    } else {",
+        "        Start-Process regsvr32.exe -ArgumentList @('/u', '/s', '/n', '/i:user', \"`\"$($dll.FullName)`\"\") -Wait",
+        "    }",
+        "}",
+        "$junctionPaths = @(",
+        "    (Join-Path $env:LOCALAPPDATA 'SageThumbs2K'),",
+        "    (Join-Path $env:APPDATA 'SageThumbs2K')",
+        ")",
+        "foreach ($linkPath in $junctionPaths) {",
+        "    if (Test-Path $linkPath) {",
+        "        $item = Get-Item $linkPath -Force",
+        "        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {",
+        "            $item.Delete()",
+        "        }",
+        "    }",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/LunarWerxs/SageThumbs-2k"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/LunarWerxs/SageThumbs-2k/releases/download/v$version/SageThumbs2K-Portable-$version.zip"
+            }
+        }
+    }
+}
