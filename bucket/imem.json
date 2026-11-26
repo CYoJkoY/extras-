@@ -24,7 +24,6 @@
             "/MERGETASKS=\"!desktopicon\""
         ]
     },
-    "post_install": "Remove-Item \"$dir\\ime-setup-x64.exe\" -Force",
     "uninstaller": {
         "file": "unins000.exe",
         "args": [
